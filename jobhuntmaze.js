@@ -5,8 +5,8 @@ window.addEventListener("load", function() {
     let maxx, maxy; // canvas dimensions
     let lSegment, nbx, nby, offsx, offsy, posx, posy;
     let segs, nbRot, maxNbRot;
-    let grid;
-    let balls, score = 0;
+    let grid, started = new Date().getTime();
+    let balls, score = 0, mouthCount = 0, mouthDir = 1;
 
     const wSegment = 5;
 
@@ -134,7 +134,8 @@ window.addEventListener("load", function() {
                 };
                 this.alpha0 = ((kcenter + (choice & 1)) * mPI) / 2; // initial angle
                 this.alpha1 = this.alpha0 + ((choice & 1 ? -1 : 1) * mPI) / 2;
-                ssquare.square.occupied = true;
+                // ssquare.square.occupied = true;
+                ssquare.square.gated = true;
                 this.sSquare = ssquare;
                 this.edgeLine.occupied = false;
                 this.edgeLine = ssquare.square.edges[nextSide].edgeLine;
@@ -166,7 +167,7 @@ window.addEventListener("load", function() {
                     this.resting = true;
                     this.duration = rand(800, 1200);
                     this.tInit = performance.now();
-                    this.sSquare.square.occupied = false;
+                    this.sSquare.square.gated = false;
                     --nbRot;
                 }
             } else {
@@ -258,11 +259,9 @@ window.addEventListener("load", function() {
             
             this.moveStatus = 0;
             grid[this.ky][this.kx].occupied = true;
+            grid[this.ky][this.kx].occupiedBy = this;
+            grid[this.ky][this.kx].ball = this;
 
-            if (isJob && (Math.random() < 0.5)) {
-                isJob = false;
-            }
-            
             if (isJob === false) {
                 this.color = "hsl(50 75% 50%)";
                 this.color1 = "hsl(230 50% 50%)";
@@ -278,42 +277,57 @@ window.addEventListener("load", function() {
                 x += this.dx * alpha;
                 y += this.dy * alpha;
             }
+            
+            if (mouthDir > 0) {
+                mouthCount += 0.1;
+            } else {
+               mouthCount -= 0.1;
+            }
 
+            if ((mouthCount > 6) || (mouthCount < 0)) {
+                mouthDir *= -1;
+            }
             if (!this.job) {
                 ctx.beginPath();
                 ctx.arc(x, y, this.radius + 4, 0, m2PI);
                 ctx.fillStyle = this.color;
                 ctx.fill();
-                ctx.beginPath();
-                ctx.arc(x - 5, y - 4, this.rad1 / 2 + 1, 0, m2PI);
-                ctx.fillStyle = "#fff";
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(x - 6 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*2), this.rad1 / 4, 0, m2PI);
-                ctx.fillStyle = "#000";
-                ctx.fill();
-
-
-                ctx.beginPath();
-                ctx.arc(x + 5, y - 4, (this.rad1 / 2) + 1, 0, m2PI);
-                ctx.fillStyle = "#fff";
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(x + 6 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*2), this.rad1 / 4, 0, m2PI);
-                ctx.fillStyle = "#000";
-                ctx.fill();
-
+                
                 ctx.beginPath();
                 ctx.fillStyle = "#000";
-                ctx.arc(x, y + (this.radius / 2) -1, this.rad1 + 2, 0, Math.PI);
+                ctx.arc(x, y + (this.radius / 2) -1, this.rad1 + 8 - mouthCount, 0, Math.PI);
                 ctx.fill();
+                ctx.strokeStyle = "hsl(50 50% 50%)";
+                ctx.lineWidth = mouthCount;
+                ctx.stroke();
+
             } else {
                 ctx.beginPath();
+                ctx.textAlign = "left";
                 ctx.font = `${this.radius*4}px Apple Color Emoji`;
                 ctx.fillText("💰", x - (this.radius*2), y + this.radius);
             }
+            ctx.beginPath();
+            ctx.arc(x - 7, y - 4, this.rad1 / 2 + 2, 0, m2PI);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x + 7, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x - 7 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.fillStyle = "#000";
+            ctx.fill();
+
+
+            ctx.beginPath();
+            ctx.arc(x + 7 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.fillStyle = "#000";
+            ctx.fill();
+
         } // draw
 
         move() {
@@ -325,11 +339,23 @@ window.addEventListener("load", function() {
                     let newDir, nextCell;
                     trydirs: for (let k = 0; k < 4; ++k) {
                         let dir = (this.dir + dirs[k]) % 4;
-                        if (grid[this.ky][this.kx].edges[dir].edgeLine.occupied)
+                        if (grid[this.ky][this.kx].edges[dir].edgeLine.occupied) {
                             continue trydirs; // forbidden edge
-                        nextCell =
-                            grid[this.ky + [-1, 0, 1, 0][dir]][this.kx + [0, 1, 0, -1][dir]];
-                        if (nextCell.occupied) continue trydirs; // forbidden next cell
+                        } 
+                        nextCell = grid[this.ky + [-1, 0, 1, 0][dir]][this.kx + [0, 1, 0, -1][dir]];
+                        if (this.job && nextCell.occupied) {
+                            continue trydirs; // forbidden next cell
+                        } else if (!this.job && nextCell.occupied) {
+                            addDivConfetti({x: posx[this.kx], y: posy[this.ky]});
+                            let idx = balls.indexOf(nextCell.occupiedBy);
+                            if ((idx>-1) && balls[idx].job) {
+                                balls.splice(idx, 1);
+                                nextCell.occupied = false;
+                            }
+                            score += 50;
+
+                        }
+
                         newDir = dir;
                         break trydirs;
                     } // for k
@@ -340,8 +366,11 @@ window.addEventListener("load", function() {
                     this.dx = [0, lSegment, 0, -lSegment][newDir];
                     this.dy = [-lSegment, 0, lSegment, 0][newDir];
                     this.dir = newDir;
+                    if (!this.job && nextCell.occupied) {
+                    }
                     this.nextCell = nextCell;
                     this.nextCell.occupied = true;
+                    this.nextCell.occupiedBy = this;
                     if (this.nextCell.dot && !this.job) {
                         this.nextCell.dot = 0;
                         score++;
@@ -393,13 +422,16 @@ window.addEventListener("load", function() {
                     ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
                     ctx.strokeStyle = "white";
                     ctx.stroke();
+                    let segy = grid.length;
+                    let segx = grid[0].length;
+
                     grid.forEach((row, ky) => {
                         row.forEach((cell, kx) => {
                             if (cell.dot) {
                                 let x = posx[kx] + lSegment / 2;
                                 let y = posy[ky] + lSegment / 2;
                                 ctx.beginPath();
-                                ctx.arc(x, y, 3, 0, m2PI);
+                                ctx.arc(x, y, (7 - ~~(segx / 10)), 0, m2PI);
                                 ctx.fillStyle = "#fff";
                                 ctx.fill();
                             }
@@ -414,6 +446,52 @@ window.addEventListener("load", function() {
                         ball.move();
                         ball.draw();
                     });
+                    ctx.beginPath();
+                    ctx.fillStyle = "#0009";
+                    ctx.fillRect(0, 10, 350, 100);
+                    ctx.lineWidth = 5;
+                    ctx.fillStyle = "#fff";
+                    ctx.strokeStyle = "#fff";
+                    ctx.strokeRect(0, 10, 350, 100);
+                    
+                    ctx.beginPath();
+                    ctx.font = "50px monospace"
+                    ctx.fillStyle = "#0f0";
+                    ctx.textAlign = "center";
+                    ctx.fillText("SCORE: " + score, 175, 75);
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#0009";
+                    ctx.fillRect(window.innerWidth - 450, 10, 450, 100);
+                    ctx.lineWidth = 5;
+                    ctx.fillStyle = "#fff";
+                    ctx.strokeStyle = "#fff";
+                    ctx.strokeRect(window.innerWidth - 450, 10, 450, 100);
+                    
+                    ctx.beginPath();
+                    ctx.font = "50px monospace"
+                    ctx.fillStyle = "#0f0";
+                    ctx.textAlign = "center";
+
+                    let t = ~~(new Date().getTime()/1000);
+                    let sec =  t - started;
+                    console.log(`t:${t}\ns:${started}\nd:${sec}`);
+                    let min = ~~(sec / 60);
+                    let hr = ~~(min / 60);
+                    sec = sec - (min * 60);
+                    min = min - (hr * 60);
+
+                    if (sec < 10) {
+                        sec = '0' + sec;
+                    }
+                    if (min < 10) {
+                        min = '0' + min;
+                    }
+                    if (hr < 10) {
+                        hr = '0' + hr;
+                    }
+                    ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 75);
+
                     break;
 
                 case 2:
@@ -424,13 +502,13 @@ window.addEventListener("load", function() {
 
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
-
     function startOver() {
         // canvas dimensions
-
+        score = 0;
         let kx, ky;
         let nbh, nbv;
         let nbSegments;
+        started = ~~((new Date().getTime()) / 1000);
 
         maxx = window.innerWidth;
         maxy = window.innerHeight;
@@ -494,7 +572,7 @@ window.addEventListener("load", function() {
 
         maxNbRot = mround(nbSegments * rand(0.05, 0.1));
 
-        balls = new Array(4).fill(0).map(() => new Ball(lSegment * 0.3, true));
+        balls = new Array(10).fill(0).map(() => new Ball(lSegment * 0.3, true));
         
         balls.push(new Ball(lSegment * 0.3, false));
 

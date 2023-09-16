@@ -1,0 +1,34 @@
+.glitter {
+    height: 62px;
+    width: 150px;
+    perspective: 500px;
+    position: absolute;
+}
+.glitter-inner {
+    position: relative;
+    height: 31px;
+    width: 75px;
+    text-align: center;
+    transition: transform 1s linear;
+    transform-origin: center center;
+    transform-style: preserve-3d;
+    
+}
+.glitter-front, .glitter-back {
+    position: absolute;
+    width: 75px;
+    height: 31px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform-origin: center center;
+}
+.glitter-front {
+    background-image: url("100back.png");
+}
+.glitter-back {
+    background-image: url("100front.png");
+    transform: rotateY(180deg);
+}
+
