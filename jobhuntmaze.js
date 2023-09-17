@@ -6,7 +6,7 @@ window.addEventListener("load", function() {
     let lSegment, nbx, nby, offsx, offsy, posx, posy;
     let segs, nbRot, maxNbRot;
     let grid, started = new Date().getTime();
-    let balls, score = 0, mouthCount = 0, mouthDir = 1;
+    let balls, score = 0, mouthCount = 0, mouthDir = 1, me;
 
     const wSegment = 5;
 
@@ -387,6 +387,9 @@ window.addEventListener("load", function() {
                         this.moveStatus = 0;
                     }
                     break;
+                case 2: 
+                    
+                    break;
             } // switch
         } // move
     } // class Ball
@@ -475,7 +478,6 @@ window.addEventListener("load", function() {
 
                     let t = ~~(new Date().getTime()/1000);
                     let sec =  t - started;
-                    console.log(`t:${t}\ns:${started}\nd:${sec}`);
                     let min = ~~(sec / 60);
                     let hr = ~~(min / 60);
                     sec = sec - (min * 60);
@@ -571,10 +573,12 @@ window.addEventListener("load", function() {
         nbRot = 0;
 
         maxNbRot = mround(nbSegments * rand(0.05, 0.1));
-
-        balls = new Array(10).fill(0).map(() => new Ball(lSegment * 0.3, true));
+        console.log(`nbSegments: ${nbSegments}`);
+        let bagcnt = Math.floor((grid.length / 1) * 1);
+        balls = new Array(bagcnt).fill(0).map(() => new Ball(lSegment * 0.3, true));
         
-        balls.push(new Ball(lSegment * 0.3, false));
+        me = new Ball(lSegment * 0.3, false);
+        balls.push(me);
 
         return true;
     } // startOver
@@ -601,6 +605,15 @@ window.addEventListener("load", function() {
     messages = [{
         message: "reset"
     }];
+
+    function handleKey(e) {
+        console.log("keypress!");
+        console.dir(e);
+        switch (e.key) {
+            case "i":
+
+    }
+    document.querySelector("body").onkeydown = handleKey;
     requestAnimationFrame(animate);
 }); // window load listener
 
