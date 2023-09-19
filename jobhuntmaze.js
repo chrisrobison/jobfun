@@ -6,7 +6,7 @@ window.addEventListener("load", function() {
     let lSegment, nbx, nby, offsx, offsy, posx, posy;
     let segs, nbRot, maxNbRot;
     let grid, started = new Date().getTime();
-    let paused = 0, balls, score = 0, mouthCount = 0, mouthDir = 1, dotsEaten = 0, dotsTotal = 0;
+    let paused = 0, balls, score = 0, mouthCount = 0, mouthDir = 1, dotsEaten = 0, dotsTotal = 0, me;
 
     const wSegment = 5;
 
@@ -445,6 +445,9 @@ window.addEventListener("load", function() {
                         this.moveStatus = 0;
                     }
                     break;
+                case 2: 
+                    
+                    break;
             } // switch
         } // move
     } // class Ball
@@ -766,11 +769,14 @@ window.addEventListener("load", function() {
         nbRot = 0;
 
         maxNbRot = mround(nbSegments * rand(0.05, 0.1));
+        
+        console.log(`nbSegments: ${nbSegments}`);
+        let bagcnt = Math.floor((grid.length / 1) * 1);
+        balls = new Array(bagcnt).fill(0).map(() => new Ball(lSegment * 0.3, true));
+        
+        me = new Ball(lSegment * 0.3, false);
+        balls.push(me);
 
-        balls = new Array(10).fill(0).map(() => new Ball(lSegment * 0.3, true, false));
-        
-        balls.push(new Ball(lSegment * 0.3, false, false));
-        
         return true;
     } // startOver
 
@@ -798,6 +804,7 @@ window.addEventListener("load", function() {
         message: "reset"
     }];
 
+<<<<<<< HEAD
 function doKeydown(e) {
     console.log("keydown");
     console.dir(e);
