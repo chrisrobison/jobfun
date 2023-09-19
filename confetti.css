@@ -26,6 +26,7 @@
 }
 .glitter-front {
     background-image: url("100back.png");
+    z-index: 2;
 }
 .glitter-back {
     background-image: url("100front.png");

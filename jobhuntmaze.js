@@ -6,7 +6,7 @@ window.addEventListener("load", function() {
     let lSegment, nbx, nby, offsx, offsy, posx, posy;
     let segs, nbRot, maxNbRot;
     let grid, started = new Date().getTime();
-    let balls, score = 0, mouthCount = 0, mouthDir = 1;
+    let paused = 0, balls, score = 0, mouthCount = 0, mouthDir = 1, dotsEaten = 0, dotsTotal = 0;
 
     const wSegment = 5;
 
@@ -243,13 +243,14 @@ window.addEventListener("load", function() {
     
 
     class Ball {
-        constructor(radius, isJob) {
+        constructor(radius, isJob=1, isFemale=0) {
             do {
                 this.kx = intRand(nbx);
                 this.ky = intRand(nby);
             } while (grid[this.ky][this.kx].occupied);
             this.radius = radius;
             this.job = isJob; 
+            this.female = isFemale; 
             this.rad1 = this.radius / 2;
             this.dir = intRand(4);
             let hue = intRand(360);
@@ -278,27 +279,25 @@ window.addEventListener("load", function() {
                 y += this.dy * alpha;
             }
             
-            if (mouthDir > 0) {
-                mouthCount += 0.1;
-            } else {
-               mouthCount -= 0.1;
-            }
-
-            if ((mouthCount > 6) || (mouthCount < 0)) {
-                mouthDir *= -1;
-            }
             if (!this.job) {
                 ctx.beginPath();
                 ctx.arc(x, y, this.radius + 4, 0, m2PI);
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 
+                mouthCount += (mouthDir > 0) ? 0.5 : -0.5;
+
+                if ((mouthCount > 6) || (mouthCount < 0)) {
+                    mouthDir *= -1;
+                }
+                
                 ctx.beginPath();
                 ctx.fillStyle = "#000";
-                ctx.arc(x, y + (this.radius / 2) -1, this.rad1 + 8 - mouthCount, 0, Math.PI);
+                ctx.arc(x, y + (this.radius / 2) - 4, this.rad1 + 6 - mouthCount, 0, Math.PI);
                 ctx.fill();
-                ctx.strokeStyle = "hsl(50 50% 50%)";
-                ctx.lineWidth = mouthCount;
+                //ctx.strokeStyle = "hsl(50 50% 50%)";
+                ctx.strokeStyle = this.female ? "#f00" : "#000";
+                ctx.lineWidth = 4; // mouthCount;
                 ctx.stroke();
 
             } else {
@@ -307,27 +306,81 @@ window.addEventListener("load", function() {
                 ctx.font = `${this.radius*4}px Apple Color Emoji`;
                 ctx.fillText("💰", x - (this.radius*2), y + this.radius);
             }
+
+            // Eyes
             ctx.beginPath();
-            ctx.arc(x - 7, y - 4, this.rad1 / 2 + 2, 0, m2PI);
+            ctx.arc(x - this.rad1 + 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + 7, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x + this.rad1 - 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
+            // Iris 
             ctx.beginPath();
-            ctx.arc(x - 7 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x - this.rad1 + 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
-
             ctx.beginPath();
-            ctx.arc(x + 7 + ([0, 1, 0, -1][this.dir]*3), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x + this.rad1 - 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
+            if (!this.job && this.female) {
+                // Bow
+                let r = this.radius;
+                let r1 = this.rad1;
+                let yo = -this.radius;
+                ctx.beginPath()
+                ctx.fillStyle = "#e55cb5";
+                ctx.moveTo(x - r1, y - (r1 / 2) - 1 + yo);
+                ctx.lineTo(x - (r1 / 4), y - 2 - 1+ yo);
+                ctx.lineTo(x + (r1 / 4), y - 2 - 1+ yo);
+                ctx.lineTo(x + r1, y - (r1 / 2)- 1 + yo);
+                ctx.lineTo(x + r1, y + (r1 / 2) + 1 + yo);
+                ctx.lineTo(x + (r1 / 4), y + 2 + 1+ yo);
+                ctx.lineTo(x - (r1 / 4), y + 2 + 1+ yo);
+                ctx.lineTo(x - r1, y + (r1 / 2) + 1 + yo);
+                ctx.lineTo(x - r1, y - (r1 / 2) -  1+ yo);
+                ctx.fill();
+                
+                ctx.moveTo(x - (r1 / 3), y + (r1 / 3) + yo);
+                ctx.lineTo(x - (r1 / 3), y - (r1 / 3) + yo);
+                ctx.lineTo(x + (r1 / 3), y - (r1 / 3) + yo);
+                ctx.lineTo(x + (r1 / 3), y + (r1 / 3) + yo);
+                ctx.lineTo(x - (r1 / 3), y + (r1 / 3) + yo);
+                ctx.fillStyle = "#ff0000";
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#990000";
+                ctx.stroke();
+                ctx.closePath();
+                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x - (r1 / 2) - 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6 , (11 * Math.PI) / 6); // Math.PI / 8);
+                ctx.fill();
+                ctx.closePath();
+                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x + (r1 / 2) + 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6, (11 * Math.PI) / 6 ); // Math.PI / 8);
+                ctx.fill();
+                ctx.closePath();
+/*                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x , y + r1 -mouthCount, r1, (Math.PI) / 12, (11 * Math.PI)/12);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = "#f00";
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+*/
+            }
         } // draw
 
         move() {
@@ -374,6 +427,11 @@ window.addEventListener("load", function() {
                     if (this.nextCell.dot && !this.job) {
                         this.nextCell.dot = 0;
                         score++;
+                        dotsEaten++;
+
+                        if (dotsEaten==dotsTotal) {
+                            nextLevel();
+                        }
                     }
                     this.duration = intRand(200, 400);
                     break;
@@ -392,6 +450,138 @@ window.addEventListener("load", function() {
     } // class Ball
     //------------------------------------------------------------------------
 
+    class Ball2 {
+        constructor(radius, x, y, isJob=1, isFemale=0) {
+            this.radius = radius;
+            this.job = isJob; 
+            this.female = isFemale; 
+            this.rad1 = this.radius / 2;
+            this.dir = intRand(4);
+            let hue = 50;
+            this.x = x;
+            this.y = y;
+            this.color = `hsl(${hue} 50% 50%)`;
+            this.color1 = `hsl(${hue + 180} 50% 50%)`;
+            
+            this.moveStatus = 0;
+
+            if (isJob === false) {
+                this.color = "hsl(50 75% 50%)";
+                this.color1 = "hsl(230 50% 50%)";
+            }
+
+        }
+
+        draw() {
+            let x = this.x;
+            let y = this.y;
+
+            mouthCount += (mouthDir > 0) ? 0.5 : -0.5;
+
+            if ((mouthCount > 6) || (mouthCount < 0)) {
+                mouthDir *= -1;
+            }
+            if (!this.job) {
+                ctx.beginPath();
+                ctx.arc(x, y, this.radius + 4, 0, m2PI);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.fillStyle = "#000";
+                ctx.arc(x, y + (this.radius / 2) - 4, this.rad1 + 8 - mouthCount, 0, Math.PI);
+                ctx.fill();
+                //ctx.strokeStyle = "hsl(50 50% 50%)";
+                ctx.strokeStyle = this.female ? "#f00" : "#000";
+                ctx.lineWidth = 4; // mouthCount;
+                ctx.stroke();
+
+            } else {
+                ctx.beginPath();
+                ctx.textAlign = "left";
+                ctx.font = `${this.radius*4}px Apple Color Emoji`;
+                ctx.fillText("💰", x - (this.radius*2), y + this.radius);
+            }
+
+            // Eyes
+            ctx.beginPath();
+            ctx.arc(x - this.rad1 + 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x + this.rad1 - 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+
+            // Iris 
+            ctx.beginPath();
+            ctx.arc(x - this.rad1 + 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.fillStyle = "#000";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x + this.rad1 - 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.fillStyle = "#000";
+            ctx.fill();
+
+            if (!this.job && this.female) {
+                // Bow
+                let r = this.radius;
+                let r1 = this.rad1;
+                let yo = -this.radius;
+                ctx.beginPath()
+                ctx.fillStyle = "#e55cb5";
+                ctx.moveTo(x - r1, y - (r1 / 2) - 1 + yo);
+                ctx.lineTo(x - (r1 / 4), y - 2 - 1+ yo);
+                ctx.lineTo(x + (r1 / 4), y - 2 - 1+ yo);
+                ctx.lineTo(x + r1, y - (r1 / 2)- 1 + yo);
+                ctx.lineTo(x + r1, y + (r1 / 2) + 1 + yo);
+                ctx.lineTo(x + (r1 / 4), y + 2 + 1+ yo);
+                ctx.lineTo(x - (r1 / 4), y + 2 + 1+ yo);
+                ctx.lineTo(x - r1, y + (r1 / 2) + 1 + yo);
+                ctx.lineTo(x - r1, y - (r1 / 2) -  1+ yo);
+                ctx.fill();
+                
+                ctx.moveTo(x - (r1 / 3), y + (r1 / 3) + yo);
+                ctx.lineTo(x - (r1 / 3), y - (r1 / 3) + yo);
+                ctx.lineTo(x + (r1 / 3), y - (r1 / 3) + yo);
+                ctx.lineTo(x + (r1 / 3), y + (r1 / 3) + yo);
+                ctx.lineTo(x - (r1 / 3), y + (r1 / 3) + yo);
+                ctx.fillStyle = "#ff0000";
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#990000";
+                ctx.stroke();
+                ctx.closePath();
+                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x - (r1 / 2) - 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6 , (11 * Math.PI) / 6); // Math.PI / 8);
+                ctx.fill();
+                ctx.closePath();
+                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x + (r1 / 2) + 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6, (11 * Math.PI) / 6 ); // Math.PI / 8);
+                ctx.fill();
+                ctx.closePath();
+/*                
+                ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x , y + r1 -mouthCount, r1, (Math.PI) / 12, (11 * Math.PI)/12);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = "#f00";
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+*/
+            }
+        } // draw
+
+    } // class Ball
+    //------------------------------------------------------------------------
+
     let animate;
 
     {
@@ -405,98 +595,100 @@ window.addEventListener("load", function() {
             message = messages.shift();
             if (message && message.message == "reset") animState = 0;
             if (message && message.message == "click") animState = 0;
-            window.requestAnimationFrame(animate);
 
-            switch (animState) {
-                case 0:
-                    if (startOver()) {
-                        ++animState;
-                    }
-                    break;
+            if (!paused) {
+                window.requestAnimationFrame(animate);
 
-                case 1:
-                    ctx.fillStyle = "black";
-                    ctx.fillRect(0, 0, maxx, maxy);
-                    ctx.beginPath();
-                    ctx.lineWidth = wSegment;
-                    ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
-                    ctx.strokeStyle = "white";
-                    ctx.stroke();
-                    let segy = grid.length;
-                    let segx = grid[0].length;
+                switch (animState) {
+                    case 0:
+                        if (startOver()) {
+                            ++animState;
+                        }
+                        break;
 
-                    grid.forEach((row, ky) => {
-                        row.forEach((cell, kx) => {
-                            if (cell.dot) {
-                                let x = posx[kx] + lSegment / 2;
-                                let y = posy[ky] + lSegment / 2;
-                                ctx.beginPath();
-                                ctx.arc(x, y, (7 - ~~(segx / 10)), 0, m2PI);
-                                ctx.fillStyle = "#fff";
-                                ctx.fill();
-                            }
+                    case 1:
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 0, maxx, maxy);
+                        ctx.beginPath();
+                        ctx.lineWidth = wSegment;
+                        ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
+                        ctx.strokeStyle = "white";
+                        ctx.stroke();
+                        let segy = grid.length;
+                        let segx = grid[0].length;
+
+                        grid.forEach((row, ky) => {
+                            row.forEach((cell, kx) => {
+                                if (cell.dot) {
+                                    let x = posx[kx] + lSegment / 2;
+                                    let y = posy[ky] + lSegment / 2;
+                                    ctx.beginPath();
+                                    ctx.arc(x, y, (7 - ~~(segx / 10)), 0, m2PI);
+                                    ctx.fillStyle = "#fff";
+                                    ctx.fill();
+                                }
+                            });
                         });
-                    });
 
-                    segs.forEach((seg) => {
-                        if (nbRot < maxNbRot) seg.rotate();
-                        seg.draw();
-                    }); // segs.forEach
-                    balls.forEach((ball) => {
-                        ball.move();
-                        ball.draw();
-                    });
-                    ctx.beginPath();
-                    ctx.fillStyle = "#0009";
-                    ctx.fillRect(0, 10, 350, 100);
-                    ctx.lineWidth = 5;
-                    ctx.fillStyle = "#fff";
-                    ctx.strokeStyle = "#fff";
-                    ctx.strokeRect(0, 10, 350, 100);
-                    
-                    ctx.beginPath();
-                    ctx.font = "50px monospace"
-                    ctx.fillStyle = "#0f0";
-                    ctx.textAlign = "center";
-                    ctx.fillText("SCORE: " + score, 175, 75);
+                        segs.forEach((seg) => {
+                            if (nbRot < maxNbRot) seg.rotate();
+                            seg.draw();
+                        }); // segs.forEach
+                        balls.forEach((ball) => {
+                            ball.move();
+                            ball.draw();
+                        });
+                        ctx.beginPath();
+                        ctx.fillStyle = "#0009";
+                        ctx.fillRect(0, 10, 350, 100);
+                        ctx.lineWidth = 5;
+                        ctx.fillStyle = "#fff";
+                        ctx.strokeStyle = "#fff";
+                        ctx.strokeRect(0, 10, 350, 100);
+                        
+                        ctx.beginPath();
+                        ctx.font = "50px monospace"
+                        ctx.fillStyle = "#0f0";
+                        ctx.textAlign = "center";
+                        ctx.fillText("SCORE: " + score, 175, 75);
 
-                    ctx.beginPath();
-                    ctx.fillStyle = "#0009";
-                    ctx.fillRect(window.innerWidth - 450, 10, 450, 100);
-                    ctx.lineWidth = 5;
-                    ctx.fillStyle = "#fff";
-                    ctx.strokeStyle = "#fff";
-                    ctx.strokeRect(window.innerWidth - 450, 10, 450, 100);
-                    
-                    ctx.beginPath();
-                    ctx.font = "50px monospace"
-                    ctx.fillStyle = "#0f0";
-                    ctx.textAlign = "center";
+                        ctx.beginPath();
+                        ctx.fillStyle = "#0009";
+                        ctx.fillRect(window.innerWidth - 450, 10, 450, 100);
+                        ctx.lineWidth = 5;
+                        ctx.fillStyle = "#fff";
+                        ctx.strokeStyle = "#fff";
+                        ctx.strokeRect(window.innerWidth - 450, 10, 450, 100);
+                        
+                        ctx.beginPath();
+                        ctx.font = "50px monospace"
+                        ctx.fillStyle = "#0f0";
+                        ctx.textAlign = "center";
 
-                    let t = ~~(new Date().getTime()/1000);
-                    let sec =  t - started;
-                    console.log(`t:${t}\ns:${started}\nd:${sec}`);
-                    let min = ~~(sec / 60);
-                    let hr = ~~(min / 60);
-                    sec = sec - (min * 60);
-                    min = min - (hr * 60);
+                        let t = ~~(new Date().getTime()/1000);
+                        let sec =  t - started;
+                        let min = ~~(sec / 60);
+                        let hr = ~~(min / 60);
+                        sec = sec - (min * 60);
+                        min = min - (hr * 60);
 
-                    if (sec < 10) {
-                        sec = '0' + sec;
-                    }
-                    if (min < 10) {
-                        min = '0' + min;
-                    }
-                    if (hr < 10) {
-                        hr = '0' + hr;
-                    }
-                    ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 75);
+                        if (sec < 10) {
+                            sec = '0' + sec;
+                        }
+                        if (min < 10) {
+                            min = '0' + min;
+                        }
+                        if (hr < 10) {
+                            hr = '0' + hr;
+                        }
+                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 75);
 
-                    break;
+                        break;
 
-                case 2:
-                    break;
-            } // switch
+                    case 2:
+                        break;
+                } // switch
+            }
         }; // animate
     } // scope for animate
 
@@ -504,6 +696,7 @@ window.addEventListener("load", function() {
     //------------------------------------------------------------------------
     function startOver() {
         // canvas dimensions
+        paused = 0;
         score = 0;
         let kx, ky;
         let nbh, nbv;
@@ -521,7 +714,7 @@ window.addEventListener("load", function() {
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, maxx, maxy);
 
-        lSegment = msqrt(maxx * maxy) / rand(15, 40);
+        lSegment = msqrt(maxx * maxy) / rand(10, 20);
 
         nbx = mfloor((maxx - 10) / lSegment);
         nby = mfloor((maxy - 10) / lSegment);
@@ -547,6 +740,8 @@ window.addEventListener("load", function() {
                 grid[ky][kx] = new Square(kx, ky);
             } // for kx
         } // for ky
+        
+        dotsTotal = ky * kx;
 
         // total numbers of segments, horizontal and vertical
         nbh = (nby + 1) * nbx;
@@ -572,10 +767,10 @@ window.addEventListener("load", function() {
 
         maxNbRot = mround(nbSegments * rand(0.05, 0.1));
 
-        balls = new Array(10).fill(0).map(() => new Ball(lSegment * 0.3, true));
+        balls = new Array(10).fill(0).map(() => new Ball(lSegment * 0.3, true, false));
         
-        balls.push(new Ball(lSegment * 0.3, false));
-
+        balls.push(new Ball(lSegment * 0.3, false, false));
+        
         return true;
     } // startOver
 
@@ -598,9 +793,206 @@ window.addEventListener("load", function() {
         ctx = canv.getContext("2d");
     } // création CANVAS
     canv.addEventListener("click", mouseClick);
+    document.addEventListener("keydown", doKeydown);
     messages = [{
         message: "reset"
     }];
+
+function doKeydown(e) {
+    console.log("keydown");
+    console.dir(e);
+
+    switch(e.key) {
+        case "p":
+            if (paused) {
+                paused = 0;
+                animate();
+            } else {
+                paused = 1;
+            break;
+
+    
+       }
+
+    }
+}
+let ani2stage = 0, animale, anifemale, anibag1, anibag2, heart;
+function nextLevel() {
+    paused = 1;
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, maxx, maxy);
+    ctx.beginPath();
+    ctx.lineWidth = wSegment;
+    ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
+    ctx.strokeStyle = "white";
+    ctx.stroke();
+
+    ani2stage = 1;
+    
+    let r = 50;
+    animale = new Ball2(50, -r * 8, window.innerHeight * 0.3, 0, 0);
+    animale.dx = 6;
+    animale.dy = 0;
+    animale.dir = 1;
+
+    anifemale = new Ball2(50, window.innerWidth + (r * 8), window.innerHeight * 0.4, 0, 1);
+    anifemale.dx = -6;
+    anifemale.dy = 0;
+    anifemale.dir = 3;
+
+    anibag1 = new Ball2(50, -(r * 2), window.innerHeight * 0.3, 1, 0);
+    anibag1.dx = 6.25;
+    anibag1.dy = 0;
+    anibag1.dir = 1;
+
+    anibag2 = new Ball2(50, (r * 2), window.innerHeight * 0.4, 1, 1);
+    anibag2.dx = -6.25;
+    anibag2.dy = 0;
+    anibag2.dir = 3;
+
+    heart = new Heart(window.innerWidth / 2, window.innerHeight / 2, 100);
+
+    animate2();
+}
+window.nextLevel = nextLevel;
+window.animate = animate;
+window.startOver = startOver;
+window.messages = messages;
+class Heart {
+    constructor(x, y, w=100) {
+        this.x = window.innerWidth / 2;
+        this.y = window.innerHeight / 2;
+        this.w = w;
+        this.h = w;
+        this.dy = -6;
+        this.dx = 0;
+    }
+
+    draw() {
+        var d = Math.min(this.w, this.h);
+        var k = this.y;
+        ctx.strokeStyle = "#000000";
+        ctx.strokeWeight = 3;
+        ctx.shadowOffsetX = 4.0;
+        ctx.shadowOffsetY = 4.0;
+        ctx.lineWidth = 5.0;
+        ctx.fillStyle = "#FF0000";
+        ctx.moveTo(k, k + d / 4);
+        ctx.quadraticCurveTo(k, k, k + d / 4, k);
+        ctx.quadraticCurveTo(k + d / 2, k, k + d / 2, k + d / 4);
+        ctx.quadraticCurveTo(k + d / 2, k, k + d * 3/4, k);
+        ctx.quadraticCurveTo(k + d, k, k + d, k + d / 4);
+        ctx.quadraticCurveTo(k + d, k + d / 2, k + d * 3/4, k + d * 3/4);
+        ctx.lineTo(k + d / 2, k + d);
+        ctx.lineTo(k + d / 4, k + d * 3/4);
+        ctx.quadraticCurveTo(k, k + d / 2, k, k + d / 4);
+        ctx.stroke();
+        ctx.fill();
+
+    }
+}
+let done = 0;
+
+function animate2() {
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, maxx, maxy);
+    ctx.beginPath();
+    ctx.lineWidth = wSegment;
+    ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
+    ctx.strokeStyle = "white";
+    ctx.stroke();
+    
+    switch(ani2stage) {
+        // Male runs from left to right chasing money
+        case 1:    
+            animale.x += animale.dx;
+            anibag1.x += anibag1.dx;
+    
+            animale.draw();
+            anibag1.draw();
+
+            if (animale.x > window.innerWidth + (animale.radius * 2)) {
+                ani2stage = 2;
+            }
+            break;
+
+        // Female runs from right to left (but lower) chasing money
+        case 2:
+            anifemale.x += anifemale.dx;
+            anibag2.x += anibag2.dx;
+    
+            anifemale.draw();
+            anibag2.draw();
+
+            if (anifemale.x < (anifemale.radius * 2)) {
+                anifemale.x = window.innerWidth + ((lSegment * 0.3) * 8);
+                anifemale.y = window.innerHeight / 2;
+                animale.y = window.innerHeight / 2;
+                animale.x = -((lSegment * 0.3) * 8);
+                anibag1.x = -((lSegment * 0.3) * 2);
+                anibag2.x = window.innerWidth + ((lSegment * 0.3) * 2);
+                anibag1.y = window.innerHeight / 2;
+                anibag2.y = window.innerHeight / 2;
+                ani2stage = 3;
+            }
+ 
+            break;
+
+        // Male & Female enter from left & right at same height, chasing money and bump in middle where money explodes
+        case 3:
+            animale.x += animale.dx;
+            anifemale.x += anifemale.dx;
+            anibag1.x += anibag1.dx;
+            anibag2.x += anibag2.dx;
+            anibag1.y += anibag1.dy;
+            anibag2.y += anibag2.dy;
+
+            animale.draw();
+            anifemale.draw();
+            anibag1.draw();
+            anibag2.draw();
+            
+            if (anibag1.x > (window.innerWidth / 2) - (anibag1.radius * 2)) {
+                anibag1.dx = 0;
+                anibag1.dy = -6;
+                anibag2.dx = 0;
+                anibag2.dy = -6;
+            }
+            if (animale.x > (window.innerWidth / 2) - animale.radius) {
+                celebrate({x: window.innerWidth / 2, y: window.innerHeight / 2}, 50);
+                animale.x = animale.x - animale.radius;
+                anifemale.x = anifemale.x + anifemale.radius;
+                anibag1.x = -1000;
+                anibag2.x = 1000;
+                ani2stage = 4;
+                heart.dy = -6;
+            }
+            break;
+        case 4:
+            animale.draw();
+            anifemale.draw();
+            
+            heart.y += heart.dy;
+            heart.draw();
+
+            if (heart.y < 0) {
+                done = 1;
+
+                messages.push({
+                    message: "reset"
+                });
+                startOver();
+                animate();
+            }
+            break;
+        default:
+
+    }
+    if (!done) {
+        window.requestAnimationFrame(animate2);
+    }
+}
     requestAnimationFrame(animate);
 }); // window load listener
 
