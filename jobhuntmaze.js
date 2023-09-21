@@ -804,7 +804,6 @@ window.addEventListener("load", function() {
         message: "reset"
     }];
 
-<<<<<<< HEAD
 function doKeydown(e) {
     console.log("keydown");
     console.dir(e);
