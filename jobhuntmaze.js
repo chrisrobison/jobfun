@@ -643,28 +643,28 @@ window.addEventListener("load", function() {
                         });
                         ctx.beginPath();
                         ctx.fillStyle = "#0009";
-                        ctx.fillRect(0, 10, 350, 100);
+                        ctx.fillRect(0, 5, 350, 100);
                         ctx.lineWidth = 5;
                         ctx.fillStyle = "#fff";
                         ctx.strokeStyle = "#fff";
                         ctx.strokeRect(0, 10, 350, 100);
                         
                         ctx.beginPath();
-                        ctx.font = "50px monospace"
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px Orbitron"
                         ctx.fillStyle = "#0f0";
                         ctx.textAlign = "center";
                         ctx.fillText("SCORE: " + score, 175, 75);
 
                         ctx.beginPath();
                         ctx.fillStyle = "#0009";
-                        ctx.fillRect(window.innerWidth - 450, 10, 450, 100);
+                        ctx.fillRect(window.innerWidth - 450, 5, 450, 100);
                         ctx.lineWidth = 5;
                         ctx.fillStyle = "#fff";
                         ctx.strokeStyle = "#fff";
-                        ctx.strokeRect(window.innerWidth - 450, 10, 450, 100);
+                        ctx.strokeRect(window.innerWidth - 450, 5, 450, 100);
                         
                         ctx.beginPath();
-                        ctx.font = "50px monospace"
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px \"Michroma\""
                         ctx.fillStyle = "#0f0";
                         ctx.textAlign = "center";
 
@@ -684,7 +684,7 @@ window.addEventListener("load", function() {
                         if (hr < 10) {
                             hr = '0' + hr;
                         }
-                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 75);
+                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, (window.innerWidth * 0.03) * 1.5);
 
                         break;
 
@@ -804,7 +804,6 @@ window.addEventListener("load", function() {
         message: "reset"
     }];
 
-<<<<<<< HEAD
 function doKeydown(e) {
     console.log("keydown");
     console.dir(e);
@@ -833,9 +832,10 @@ function nextLevel() {
     ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
     ctx.strokeStyle = "white";
     ctx.stroke();
-
-    ani2stage = 1;
     
+    ani2stage = 1;
+    done = 0;
+
     let r = 50;
     animale = new Ball2(50, -r * 8, window.innerHeight * 0.3, 0, 0);
     animale.dx = 6;
@@ -858,6 +858,8 @@ function nextLevel() {
     anibag2.dir = 3;
 
     heart = new Heart(window.innerWidth / 2, window.innerHeight / 2, 100);
+    heart.dx = 0;
+    heart.dy = -3;
 
     animate2();
 }
@@ -876,6 +878,7 @@ class Heart {
     }
 
     draw() {
+        
         var d = Math.min(this.w, this.h);
         var k = this.y;
         ctx.strokeStyle = "#000000";

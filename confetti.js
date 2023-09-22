@@ -1,7 +1,7 @@
 // global variables
 //const confetti = document.getElementById('confetti');
 //const confettiCtx = confetti.getContext('2d');
-let container = { h: 500, w: 500 }, confettiElements = [],
+let container = { h: window.innerHeight, w: window.innerWidth }, confettiElements = [],
     clickPosition;
 
 const panel = document.querySelector("body");
@@ -28,7 +28,7 @@ const confettiParams = {
     terminalVelocity: 4,
     // how fast particles are rotating around themselves
     flipSpeed: .1,
-    rotateSpeed: 0.1
+    rotateSpeed: 0.12
 };
 const colors = [
     { front: '#3B870A', back: '#235106' },
@@ -58,9 +58,9 @@ function Conf() {
     };
     this.rotation = {
         amt: rand(0, 4 * Math.PI) - (2 * Math.PI),
-        x: rand(0,4) - 2,
+        x: rand(0,2) - 1,
         y: rand(0,4) - 2,
-        z: rand(0,4) - 2
+        z: rand(0,2) - 1
     };
     this.scale = {
         x: 1,
@@ -81,7 +81,7 @@ function Conf() {
     this.element = document.createElement("div");
     this.element.className = "glitter";
 
-    let html = "<div class='glitter-inner'><div class='glitter-front'></div><div class='glitter-back'></div></div>";
+    let html = "<div class='glitter-inner'><div class='glitter-front'><img src='100front.png' height='62' width='150'></div><div class='glitter-back'><img src='100back.png' height='62' width='150'></div></div>";
     this.element.innerHTML = html;
 
 //    this.element.style.backgroundColor = this.colorPair.front;
@@ -102,9 +102,10 @@ function Conf() {
         this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity);
         this.position.y += this.velocity.y;
         this.rotate += confettiParams.rotateSpeed;
+        this.scale.y = Math.cos((this.position.y + this.randomModifier) * this.flipSpeed);
 	    this.element.style.transform = `rotate3d(${this.rotation.x},${this.rotation.y},${this.rotation.z},${this.rotate}rad)`;
 
-        this.scale.y = Math.cos((this.position.y + this.randomModifier) * this.flipSpeed);
+
         this.color = this.scale.y > 0 ? this.colorPair.front : this.colorPair.back;
     }
 }
