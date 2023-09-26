@@ -924,6 +924,7 @@ function animate2() {
 
             if (animale.x > window.innerWidth + (animale.radius * 2)) {
                 ani2stage = 2;
+                anibag2.x = window.innerWidth;
             }
             break;
 
