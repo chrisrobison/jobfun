@@ -254,6 +254,12 @@ window.addEventListener("load", function() {
             this.rad1 = this.radius / 2;
             this.dir = intRand(4);
             let hue = intRand(360);
+                
+            ctx.beginPath();
+            ctx.textAlign = "left";
+            ctx.font = `${this.radius*4}px Apple Color Emoji`;
+            let sz = ctx.measureText("💰");
+            this.width = sz;
 
             this.color = `hsl(${hue} 100% 50%)`;
             this.color1 = `hsl(${hue + 180} 100% 50%)`;
@@ -304,28 +310,29 @@ window.addEventListener("load", function() {
                 ctx.beginPath();
                 ctx.textAlign = "left";
                 ctx.font = `${this.radius*4}px Apple Color Emoji`;
-                ctx.fillText("💰", x - (this.radius*2), y + this.radius);
+                let sz = ctx.measureText("💰");
+                ctx.fillText("💰", x - (this.radius*3) + 5, y + this.radius);
             }
 
             // Eyes
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x - this.rad1 + 3, y - 5, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x + this.rad1 - 3, y - 5, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             // Iris 
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x - this.rad1 + 3 + ([0, 1, 0, -1][this.dir]*4), y - 5 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x + this.rad1 - 3 + ([0, 1, 0, -1][this.dir]*4), y - 5 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
@@ -465,7 +472,13 @@ window.addEventListener("load", function() {
             this.y = y;
             this.color = `hsl(${hue} 50% 50%)`;
             this.color1 = `hsl(${hue + 180} 50% 50%)`;
-            
+                
+            ctx.beginPath();
+            ctx.textAlign = "left";
+            ctx.font = `${this.radius*4}px Apple Color Emoji`;
+            let sz = ctx.measureText("💰");
+            this.width = sz;
+
             this.moveStatus = 0;
 
             if (isJob === false) {
@@ -502,31 +515,32 @@ window.addEventListener("load", function() {
             } else {
                 ctx.beginPath();
                 ctx.textAlign = "left";
-                ctx.font = `${this.radius*4}px Apple Color Emoji`;
-                ctx.fillText("💰", x - (this.radius*2), y + this.radius);
+                ctx.font = `${this.radius*3}px Apple Color Emoji`;
+                ctx.fillText("💰", x - (this.radius*2), y + this.radius - 10);
             }
 
             // Eyes
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x - (this.rad1 - 2), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 2, y - 4, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x + (this.rad1 - 2), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             // Iris 
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x - (this.rad1 - 2) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 2 + ([0, 1, 0, -1][this.dir]*4), y - 4 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x + (this.rad1 - 2) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
+            ctx.closePath();
 
             if (!this.job && this.female) {
                 // Bow
@@ -783,9 +797,10 @@ window.addEventListener("load", function() {
     //------------------------------------------------------------------------
 
     function mouseClick(event) {
-        messages.push({
+        nextLevel();
+       /* messages.push({
             message: "click"
-        });
+        }); */
     } // mouseClick
 
     //------------------------------------------------------------------------
@@ -852,7 +867,7 @@ function nextLevel() {
     anibag1.dy = 0;
     anibag1.dir = 1;
 
-    anibag2 = new Ball2(50, (r * 2), window.innerHeight * 0.4, 1, 1);
+    anibag2 = new Ball2(50, window.innerWidth, window.innerHeight * 0.4, 1, 1);
     anibag2.dx = -6.25;
     anibag2.dy = 0;
     anibag2.dir = 3;
@@ -907,18 +922,18 @@ function animate2() {
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, maxx, maxy);
-    ctx.beginPath();
+    /*
+     * ctx.beginPath();
     ctx.lineWidth = wSegment;
     ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
     ctx.strokeStyle = "white";
     ctx.stroke();
-    
+    */
     switch(ani2stage) {
         // Male runs from left to right chasing money
         case 1:    
             animale.x += animale.dx;
             anibag1.x += anibag1.dx;
-    
             animale.draw();
             anibag1.draw();
 
@@ -935,13 +950,12 @@ function animate2() {
     
             anifemale.draw();
             anibag2.draw();
-
             if (anifemale.x < (anifemale.radius * 2)) {
-                anifemale.x = window.innerWidth + ((lSegment * 0.3) * 8);
+                anifemale.x = window.innerWidth + ((anifemale.radius) * 8);
                 anifemale.y = window.innerHeight / 2;
                 animale.y = window.innerHeight / 2;
-                animale.x = -((lSegment * 0.3) * 8);
-                anibag1.x = -((lSegment * 0.3) * 2);
+                animale.x = -(animale.radius * 8);
+                anibag1.x = -(anibag1.radius * 2);
                 anibag2.x = window.innerWidth + ((lSegment * 0.3) * 2);
                 anibag1.y = window.innerHeight / 2;
                 anibag2.y = window.innerHeight / 2;
@@ -977,10 +991,21 @@ function animate2() {
                 anibag1.x = -1000;
                 anibag2.x = 1000;
                 ani2stage = 4;
-                heart.dy = -6;
+                animale.dx = -3;
+                anifemale.dx = 3;
+                animale.dy = -6;
+                anifemale.dy = -6;
+                heart.dy = -1;
+                heart.dx = 0;
             }
             break;
         case 4:
+            animale.x += animale.dx;
+            anifemale.x += anifemale.dx;
+            animale.y = animale.y + Math.sin(animale.x / 20) * 10;  //animale.dy;
+            anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
+            // anifemale.y += anifemale.dy;
+
             animale.draw();
             anifemale.draw();
             
@@ -989,7 +1014,7 @@ function animate2() {
 
             if (heart.y < 0) {
                 done = 1;
-
+                ani2stage = 5;
                 messages.push({
                     message: "reset"
                 });
