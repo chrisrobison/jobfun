@@ -6,18 +6,19 @@
 }
 .glitter-inner {
     position: relative;
-    height: 31px;
-    width: 75px;
+    height: 62px;
+    width: 150px;
     text-align: center;
-    transition: transform 1s linear;
+    transition: transform 100ms linear;
     transform-origin: center center;
     transform-style: preserve-3d;
-    
+    animation: flip 4s linear 0s infinite forwards;
 }
+
 .glitter-front, .glitter-back {
     position: absolute;
-    width: 75px;
-    height: 31px;
+    width: 150px;
+    height: 62px;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     background-size: contain;
@@ -25,11 +26,10 @@
     transform-origin: center center;
 }
 .glitter-front {
-    background-image: url("100back.png");
     z-index: 2;
 }
 .glitter-back {
-    background-image: url("100front.png");
     transform: rotateY(180deg);
+    z-index: 1;
 }
 

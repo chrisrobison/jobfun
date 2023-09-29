@@ -276,6 +276,13 @@ var ballRadians = [
             this.mouthDir = 1;
             this.mouthCount = 0;
             this.mouthDir = 1;
+                
+            ctx.beginPath();
+            ctx.textAlign = "left";
+            ctx.font = `${this.radius*4}px Apple Color Emoji`;
+            let sz = ctx.measureText("💰");
+            this.width = sz;
+
             this.color = `hsl(${hue} 100% 50%)`;
             this.color1 = `hsl(${hue + 180} 100% 50%)`;
             
@@ -965,23 +972,24 @@ function animate2() {
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, maxx, maxy);
-    ctx.beginPath();
+    /*
+     * ctx.beginPath();
     ctx.lineWidth = wSegment;
     ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
     ctx.strokeStyle = "white";
     ctx.stroke();
-    
+    */
     switch(ani2stage) {
         // Male runs from left to right chasing money
         case 1:    
             animale.x += animale.dx;
             anibag1.x += anibag1.dx;
-    
             animale.draw();
             anibag1.draw();
 
             if (animale.x > window.innerWidth + (animale.radius * 2)) {
                 ani2stage = 2;
+                anibag2.x = window.innerWidth;
             }
             break;
 
@@ -992,13 +1000,12 @@ function animate2() {
     
             anifemale.draw();
             anibag2.draw();
-
             if (anifemale.x < (anifemale.radius * 2)) {
-                anifemale.x = window.innerWidth + ((lSegment * 0.3) * 8);
+                anifemale.x = window.innerWidth + ((anifemale.radius) * 8);
                 anifemale.y = window.innerHeight / 2;
                 animale.y = window.innerHeight / 2;
-                animale.x = -((lSegment * 0.3) * 8);
-                anibag1.x = -((lSegment * 0.3) * 2);
+                animale.x = -(animale.radius * 8);
+                anibag1.x = -(anibag1.radius * 2);
                 anibag2.x = window.innerWidth + ((lSegment * 0.3) * 2);
                 anibag1.y = window.innerHeight / 2;
                 anibag2.y = window.innerHeight / 2;
@@ -1034,10 +1041,21 @@ function animate2() {
                 anibag1.x = -1000;
                 anibag2.x = 1000;
                 ani2stage = 4;
-                heart.dy = -6;
+                animale.dx = -3;
+                anifemale.dx = 3;
+                animale.dy = -6;
+                anifemale.dy = -6;
+                heart.dy = -1;
+                heart.dx = 0;
             }
             break;
         case 4:
+            animale.x += animale.dx;
+            anifemale.x += anifemale.dx;
+            animale.y = animale.y + Math.sin(animale.x / 20) * 10;  //animale.dy;
+            anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
+            // anifemale.y += anifemale.dy;
+
             animale.draw();
             anifemale.draw();
             
@@ -1046,7 +1064,7 @@ function animate2() {
 
             if (heart.y < 0) {
                 done = 1;
-
+                ani2stage = 5;
                 messages.push({
                     message: "reset"
                 });

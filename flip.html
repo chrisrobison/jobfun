@@ -59,16 +59,16 @@
             
         }
         .glitter {
-    height: 31px;
-    width: 75px;
+    height: 124px;
+    width: 300px;
     perspective: 500px;
     position: absolute;
     top: 20%;
 }
 .glitter-inner {
     position: relative;
-    height: 31px;
-    width: 75px;
+    height: 124px;
+    width: 300px;
     text-align: center;
     transition: transform 100ms linear;
     transform-origin: center center;
@@ -80,8 +80,8 @@
 }
 .glitter-front, .glitter-back {
     position: absolute;
-    width: 75px;
-    height: 31px;
+    width: 300px;
+    height: 124px;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     background-size: contain;
@@ -113,6 +113,7 @@
 const $ = str => document.querySelector(str);
 const $$ = str => document.querySelectorAll(str);
 clickPosition = [];
+
 (function() {
     const app = {
         data: {},
@@ -193,4 +194,3 @@ clickPosition = [];
 </body>
 
 </html>
-

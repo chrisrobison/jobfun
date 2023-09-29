@@ -12,11 +12,11 @@ rand = (min, max) => Math.random() * (max - min) + min;
 // params to play with
 const confettiParams = {
     // number of confetti per "explosion"
-    number: 25,
+    number: 20,
     // min and max size for each rectangle
     size: {
-        x: [5, 20],
-        y: [10, 18]
+        x: [75, 75],
+        y: [31, 31]
     },
     // power of explosion
     initSpeed: 15,
@@ -81,7 +81,7 @@ function Conf() {
     this.element = document.createElement("div");
     this.element.className = "glitter";
 
-    let html = "<div class='glitter-inner'><div class='glitter-front'></div><div class='glitter-back'></div></div>";
+    let html = "<div class='glitter-inner'><div class='glitter-front'><img src='100front.png' height='31' width='75'></div><div class='glitter-back'><img src='100back.png' height='31' width='75'></div></div>";
     this.element.innerHTML = html;
 
 //    this.element.style.backgroundColor = this.colorPair.front;
