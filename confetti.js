@@ -19,13 +19,13 @@ const confettiParams = {
         y: [31, 31]
     },
     // power of explosion
-    initSpeed: 20,
+    initSpeed: 15,
     // defines how fast particles go down after blast-off
     gravity: 0.35,
     // how wide is explosion
     drag: 0.08,
     // how slow particles are falling
-    terminalVelocity: 4,
+    terminalVelocity: 3,
     // how fast particles are rotating around themselves
     flipSpeed: .1,
     rotateSpeed: 0.12
@@ -63,7 +63,7 @@ function Conf() {
         z: rand(0,2) - 1
     };
     this.scale = {
-        x: 1,
+        x: 2,
         y: 1
     };
     this.velocity = {
@@ -176,7 +176,7 @@ function addDivConfetti(e) {
 
 function celebrate(e, num) {
     addDivConfetti(e);
-    let cnt = ~~(Math.random() * 5) + 2;
+    let cnt = 1; //~~(Math.random() * 5) + 2;
     for (let i = 0; i < cnt; i++) {
         setTimeout(function() { addDivConfetti(); }, ~~(Math.random() * 2000));
     }
@@ -201,3 +201,4 @@ function hideConfetti() {
     confettiElements.forEach(item=>item.element.parentElement.removeChild(item.element));
     confettiElements = [];
 }
+

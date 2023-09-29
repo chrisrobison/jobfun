@@ -19,6 +19,10 @@
             align-items: center;
             justify-content: center;
             background-color:#000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+                color: #fff;
         }
 
         header {
@@ -85,9 +89,11 @@
     transform-origin: center center;
 }
 .glitter-front {
+    background-image: url("100front.png");
     z-index: 2;
 }
 .glitter-back {
+    background-image: url("100back.png");
     transform: rotateY(180deg);
     z-index: 1;
 }
@@ -101,27 +107,49 @@
 </head>
 <body>
 <main>
-    <div class="glitter">
-        <div class="glitter-inner">
-            <div class='glitter-front'><img src='100front.png' height="124" width="300"></div>
-            <div class='glitter-back'><img src='100back.png' height="124" width="300"></div>
-        </div>
-    </div>
+    <h1>Click to Make It Rain</h1>
 </main>
 <script>
 const $ = str => document.querySelector(str);
 const $$ = str => document.querySelectorAll(str);
+clickPosition = [];
 
 (function() {
     const app = {
         data: {},
         state: {
-            loaded: false
+            loaded: false,
+            dragging: 0,
+            elements: []
         },
         init: function() {
-            $(".glitter-inner").style.transformOrigin = (Math.random()*300) + ' ' + (Math.random()*124);
+            document.addEventListener("mousedown", app.doDown);
+            document.addEventListener("mouseup", app.doUp);
+            document.addEventListener("mousemove", app.doMove);
             document.addEventListener("click", app.doClick);
             app.state.loaded = true;
+        },
+        doDown: function(e) {
+            app.state.dragging = 1;
+            clickPosition[0] = e.x;
+            clickPosition[1] = e.y;
+            let cnt = ~~(Math.random()*5);
+            for (let i=0; i<cnt; i++) {
+                confettiElements.push(new Conf());
+            }
+        },
+        doUp: function(e) {
+            app.state.dragging = 0;
+        },
+        doMove: function(e) {
+            if (!app.state.dragging) return;
+            clickPosition[0] = e.x;
+            clickPosition[1] = e.y;
+            let cnt = ~~(Math.random()*5);
+            for (let i=0; i<cnt; i++) {
+                confettiElements.push(new Conf());
+            }
+ 
         },
         fetch: function(url, callback) {
             fetch(url).then(response=>response.json()).then(data=>{

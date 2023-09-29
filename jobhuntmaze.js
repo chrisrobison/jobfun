@@ -240,8 +240,26 @@ window.addEventListener("load", function() {
         }
 } // class Square
     //------------------------------------------------------------------------
-    
+var pi = Math.PI;
 
+var ballRadians = [
+        [pi,2*pi],
+        [pi,2*pi],
+        [13*pi/12,23*pi/12],
+        [13*pi/12,23*pi/12],
+        [7*pi/6, 11*pi/6],
+        [5*pi/4, 7*pi/4],
+        [4*pi/3, 5*pi/3],
+        [4*pi/3, 5*pi/3],
+        [3*pi/2, 3*pi/2]
+];
+ var ballDegrees = [
+        [180,360],
+        [195,345],
+        [210, 330],
+        [225, 315],
+        [240, 300]
+];
     class Ball {
         constructor(radius, isJob=1, isFemale=0) {
             do {
@@ -254,6 +272,10 @@ window.addEventListener("load", function() {
             this.rad1 = this.radius / 2;
             this.dir = intRand(4);
             let hue = intRand(360);
+            this.mouth = [180, 360];
+            this.mouthDir = 1;
+            this.mouthCount = 0;
+            this.mouthDir = 1;
                 
             ctx.beginPath();
             ctx.textAlign = "left";
@@ -272,8 +294,13 @@ window.addEventListener("load", function() {
             if (isJob === false) {
                 this.color = "hsl(50 75% 50%)";
                 this.color1 = "hsl(230 50% 50%)";
-            }
-
+            } else {
+                ctx.font = `${lSegment}px Apple Color Emoji`;
+                let tw = ctx.measureText("💰").width;
+                console.log(`txt width: ${tw}`);
+                this.radius = tw / 2;
+                this.rad1 = this.radius / 4;
+            } 
         }
 
         draw() {
@@ -291,48 +318,65 @@ window.addEventListener("load", function() {
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 
-                mouthCount += (mouthDir > 0) ? 0.5 : -0.5;
+                this.mouthCount += (this.mouthDir > 0) ? 1 : -1;
 
-                if ((mouthCount > 6) || (mouthCount < 0)) {
-                    mouthDir *= -1;
+                //if ((mouthCount > 5) || (mouthCount < 0)) { mouthDir *= -1; }
+                this.mouth[0] += this.mouthDir * 3;
+                this.mouth[1] -= this.mouthDir * 3;
+                if ((this.mouth[0] > 340) || (this.mouth[0] < 180) || (this.mouth[1] > 360) || (this.mouth[1] < 300)) {
+                    this.mouthDir *= -1;
                 }
-                
+                let earc = this.mouth[1] * 0.0174533;
+                let sarc = this.mouth[0] * 0.0174533;
                 ctx.beginPath();
                 ctx.fillStyle = "#000";
-                ctx.arc(x, y + (this.radius / 2) - 4, this.rad1 + 6 - mouthCount, 0, Math.PI);
+                ctx.arc(x, y + (this.radius / 2) - 6, this.rad1 + 4 , -earc, -sarc);
                 ctx.fill();
-                //ctx.strokeStyle = "hsl(50 50% 50%)";
+                ctx.closePath();
+
+                // tongue
+                /*
+                 * ctx.beginPath();
+                ctx.fillStyle = "#f00";
+                ctx.arc(x, y + (this.radius)  , (this.rad1 / 2) , Math.PI, 0);
+                ctx.fill();
+                ctx.closePath();
+                */
+                ctx.beginPath();
+                ctx.fillStyle = "#000";
+                ctx.arc(x, y + (this.radius / 2) - 6, this.rad1 + 4, -earc, -sarc);
+
                 ctx.strokeStyle = this.female ? "#f00" : "#000";
-                ctx.lineWidth = 4; // mouthCount;
+                ctx.lineWidth = this.female ? 5 : 1; //mouthCount;
                 ctx.stroke();
 
             } else {
+                ctx.closePath();
                 ctx.beginPath();
-                ctx.textAlign = "left";
-                ctx.font = `${this.radius*4}px Apple Color Emoji`;
-                let sz = ctx.measureText("💰");
-                ctx.fillText("💰", x - (this.radius*3) + 5, y + this.radius);
+                ctx.textAlign = "center";
+                ctx.font = `${lSegment}px Apple Color Emoji`;
+                ctx.fillText("💰", x , y + this.rad1 + (this.rad1/2) + 4);
             }
 
             // Eyes
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 3, y - 5, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x - this.rad1 + 2, y - (this.rad1 / 2), (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 3, y - 5, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x + this.rad1 - 2, y - (this.rad1 / 2), (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             // Iris 
             ctx.beginPath();
-            ctx.arc(x - this.rad1 + 3 + ([0, 1, 0, -1][this.dir]*4), y - 5 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x - this.rad1 + 2 + ([0, 1, 0, -1][this.dir]*4), y - (this.rad1 / 2) + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + this.rad1 - 3 + ([0, 1, 0, -1][this.dir]*4), y - 5 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x + this.rad1 - 2 + ([0, 1, 0, -1][this.dir]*4), y - (this.rad1 / 2) + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
@@ -368,13 +412,13 @@ window.addEventListener("load", function() {
                 
                 ctx.beginPath();
                 ctx.fillStyle = "#f00";
-                ctx.arc(x - (r1 / 2) - 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6 , (11 * Math.PI) / 6); // Math.PI / 8);
+                ctx.arc(x - (r1 / 2) - 2, y + (r1 * 1.3) + this.mouthCount, (r1 * .8), (7 * Math.PI) / 6 , (11 * Math.PI) / 6); // Math.PI / 8);
                 ctx.fill();
                 ctx.closePath();
                 
                 ctx.beginPath();
                 ctx.fillStyle = "#f00";
-                ctx.arc(x + (r1 / 2) + 2, y + (r1 * 1.3) + mouthCount, (r1 * .8), (7 * Math.PI) / 6, (11 * Math.PI) / 6 ); // Math.PI / 8);
+                ctx.arc(x + (r1 / 2) + 2, y + (r1 * 1.3) + this.mouthCount, (r1 * .8), (7 * Math.PI) / 6, (11 * Math.PI) / 6 ); // Math.PI / 8);
                 ctx.fill();
                 ctx.closePath();
 /*                
@@ -521,23 +565,23 @@ window.addEventListener("load", function() {
 
             // Eyes
             ctx.beginPath();
-            ctx.arc(x - (this.rad1 - 2), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x - (this.rad1 - 4), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + (this.rad1 - 2), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
+            ctx.arc(x + (this.rad1 - 4), y - 10, (this.rad1 / 2) + 2, 0, m2PI);
             ctx.fillStyle = "#fff";
             ctx.fill();
 
             // Iris 
             ctx.beginPath();
-            ctx.arc(x - (this.rad1 - 2) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x - (this.rad1 - 4) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x + (this.rad1 - 2) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
+            ctx.arc(x + (this.rad1 - 4) + ([0, 1, 0, -1][this.dir]*4), y - 10 + ([-1, 0, 1, 0][this.dir]*3), this.rad1 / 4, 0, m2PI);
             ctx.fillStyle = "#000";
             ctx.fill();
             ctx.closePath();
@@ -599,6 +643,7 @@ window.addEventListener("load", function() {
     } // class Ball
     //------------------------------------------------------------------------
 
+
     let animate;
 
     {
@@ -656,30 +701,29 @@ window.addEventListener("load", function() {
                             ball.draw();
                         });
                         ctx.beginPath();
-                        ctx.fillStyle = "#0009";
-                        ctx.fillRect(0, 5, 350, 100);
+                        ctx.fillStyle = "#00f9";
+                        ctx.fillRect(0, 5, window.innerWidth, 40);
                         ctx.lineWidth = 5;
                         ctx.fillStyle = "#fff";
                         ctx.strokeStyle = "#fff";
-                        ctx.strokeRect(0, 10, 350, 100);
+                        ctx.strokeRect(0, 5, window.innerWidth, 40);
                         
                         ctx.beginPath();
-                        ctx.font = ((window.innerWidth * 0.02) ) + "px Orbitron"
-                        ctx.fillStyle = "#0f0";
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
+                        ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
-                        ctx.fillText("SCORE: " + score, 175, 75);
+                        let showscore = '0'.repeat(6-score.toString().length) + score;
+                        ctx.fillText("SCORE: " + showscore, 175, 35);
 
                         ctx.beginPath();
-                        ctx.fillStyle = "#0009";
-                        ctx.fillRect(window.innerWidth - 450, 5, 450, 100);
-                        ctx.lineWidth = 5;
-                        ctx.fillStyle = "#fff";
-                        ctx.strokeStyle = "#fff";
-                        ctx.strokeRect(window.innerWidth - 450, 5, 450, 100);
-                        
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
+                        ctx.fillStyle = "#ff0";
+                        ctx.textAlign = "center";
+                        ctx.fillText("DOTS: " + dotsEaten + '/' + dotsTotal, 425, 35);
+
                         ctx.beginPath();
-                        ctx.font = ((window.innerWidth * 0.02) ) + "px \"Michroma\""
-                        ctx.fillStyle = "#0f0";
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
+                        ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
 
                         let t = ~~(new Date().getTime()/1000);
@@ -698,7 +742,7 @@ window.addEventListener("load", function() {
                         if (hr < 10) {
                             hr = '0' + hr;
                         }
-                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, (window.innerWidth * 0.03) * 1.5);
+                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 35);
 
                         break;
 
@@ -758,7 +802,8 @@ window.addEventListener("load", function() {
             } // for kx
         } // for ky
         
-        dotsTotal = ky * kx;
+        dotsTotal = (grid.length * grid[0].length);
+        dotsEaten = 0;
 
         // total numbers of segments, horizontal and vertical
         nbh = (nby + 1) * nbx;
@@ -798,9 +843,7 @@ window.addEventListener("load", function() {
 
     function mouseClick(event) {
         nextLevel();
-       /* messages.push({
-            message: "click"
-        }); */
+        //messages.push({ message: "click" });
     } // mouseClick
 
     //------------------------------------------------------------------------
@@ -852,22 +895,22 @@ function nextLevel() {
     done = 0;
 
     let r = 50;
-    animale = new Ball2(50, -r * 8, window.innerHeight * 0.3, 0, 0);
+    animale = new Ball2(50, -r * 8, window.innerHeight * 0.2, 0, 0);
     animale.dx = 6;
     animale.dy = 0;
     animale.dir = 1;
 
-    anifemale = new Ball2(50, window.innerWidth + (r * 8), window.innerHeight * 0.4, 0, 1);
+    anifemale = new Ball2(50, window.innerWidth + (r * 8), window.innerHeight * 0.2, 0, 1);
     anifemale.dx = -6;
     anifemale.dy = 0;
     anifemale.dir = 3;
 
-    anibag1 = new Ball2(50, -(r * 2), window.innerHeight * 0.3, 1, 0);
+    anibag1 = new Ball2(50, -(r * 2), window.innerHeight * 0.2, 1, 0);
     anibag1.dx = 6.25;
     anibag1.dy = 0;
     anibag1.dir = 1;
 
-    anibag2 = new Ball2(50, window.innerWidth, window.innerHeight * 0.4, 1, 1);
+    anibag2 = new Ball2(50, window.innerWidth + (r * 4), window.innerHeight * 0.2, 1, 1);
     anibag2.dx = -6.25;
     anibag2.dy = 0;
     anibag2.dir = 3;
@@ -902,16 +945,23 @@ class Heart {
         ctx.shadowOffsetY = 4.0;
         ctx.lineWidth = 5.0;
         ctx.fillStyle = "#FF0000";
-        ctx.moveTo(k, k + d / 4);
-        ctx.quadraticCurveTo(k, k, k + d / 4, k);
-        ctx.quadraticCurveTo(k + d / 2, k, k + d / 2, k + d / 4);
-        ctx.quadraticCurveTo(k + d / 2, k, k + d * 3/4, k);
-        ctx.quadraticCurveTo(k + d, k, k + d, k + d / 4);
-        ctx.quadraticCurveTo(k + d, k + d / 2, k + d * 3/4, k + d * 3/4);
-        ctx.lineTo(k + d / 2, k + d);
-        ctx.lineTo(k + d / 4, k + d * 3/4);
-        ctx.quadraticCurveTo(k, k + d / 2, k, k + d / 4);
-        ctx.stroke();
+        ctx.beginPath();
+        ctx.font = `200px Apple Color Emoji`;
+        ctx.fillText("❤️", this.x, this.y);
+        ctx.closePath();
+
+        ctx.moveTo(this.x, this.y + this.h);
+        ctx.lineTo(this.x -((this.w / 2) + (this.w / 4) - 8), this.y );
+        ctx.lineTo(this.x +((this.w / 2) + (this.w / 4) - 8), this.y );
+        ctx.lineTo(this.x, this.y + this.h);
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.arc(this.x - (this.w/3), this.y, this.w / 3, Math.PI, m2PI);
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.arc(this.x + (this.w/3), this.y, this.w / 3, Math.PI, m2PI);
         ctx.fill();
 
     }
@@ -1031,6 +1081,7 @@ function animate2() {
 }
     requestAnimationFrame(animate);
 }); // window load listener
+
 
 
 
