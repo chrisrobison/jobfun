@@ -1,7 +1,7 @@
 // global variables
 //const confetti = document.getElementById('confetti');
 //const confettiCtx = confetti.getContext('2d');
-let container = { h: 500, w: 500 }, confettiElements = [],
+let container = { h: window.innerHeight, w: window.innerWidth }, confettiElements = [],
     clickPosition;
 
 const panel = document.querySelector("body");
@@ -12,23 +12,23 @@ rand = (min, max) => Math.random() * (max - min) + min;
 // params to play with
 const confettiParams = {
     // number of confetti per "explosion"
-    number: 50,
+    number: 25,
     // min and max size for each rectangle
     size: {
         x: [5, 20],
         y: [10, 18]
     },
     // power of explosion
-    initSpeed: 20,
+    initSpeed: 15,
     // defines how fast particles go down after blast-off
     gravity: 0.35,
     // how wide is explosion
     drag: 0.08,
     // how slow particles are falling
-    terminalVelocity: 4,
+    terminalVelocity: 3,
     // how fast particles are rotating around themselves
     flipSpeed: .1,
-    rotateSpeed: 0.1
+    rotateSpeed: 0.12
 };
 const colors = [
     { front: '#3B870A', back: '#235106' },
@@ -58,12 +58,12 @@ function Conf() {
     };
     this.rotation = {
         amt: rand(0, 4 * Math.PI) - (2 * Math.PI),
-        x: rand(0,4) - 2,
+        x: rand(0,2) - 1,
         y: rand(0,4) - 2,
-        z: rand(0,4) - 2
+        z: rand(0,2) - 1
     };
     this.scale = {
-        x: 1,
+        x: 2,
         y: 1
     };
     this.velocity = {
@@ -102,9 +102,10 @@ function Conf() {
         this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity);
         this.position.y += this.velocity.y;
         this.rotate += confettiParams.rotateSpeed;
+        this.scale.y = Math.cos((this.position.y + this.randomModifier) * this.flipSpeed);
 	    this.element.style.transform = `rotate3d(${this.rotation.x},${this.rotation.y},${this.rotation.z},${this.rotate}rad)`;
 
-        this.scale.y = Math.cos((this.position.y + this.randomModifier) * this.flipSpeed);
+
         this.color = this.scale.y > 0 ? this.colorPair.front : this.colorPair.back;
     }
 }
@@ -175,7 +176,7 @@ function addDivConfetti(e) {
 
 function celebrate(e, num) {
     addDivConfetti(e);
-    let cnt = ~~(Math.random() * 5) + 2;
+    let cnt = 1; //~~(Math.random() * 5) + 2;
     for (let i = 0; i < cnt; i++) {
         setTimeout(function() { addDivConfetti(); }, ~~(Math.random() * 2000));
     }
@@ -200,3 +201,4 @@ function hideConfetti() {
     confettiElements.forEach(item=>item.element.parentElement.removeChild(item.element));
     confettiElements = [];
 }
+

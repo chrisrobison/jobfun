@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <title>Job Hunt Simulator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&family=Londrina+Shadow&family=Michroma&family=Orbitron:wght@400;500;600;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="confetti.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@200;300;400;500;600;700&family=Michroma&family=Nabla&family=Orbitron:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: "Lexend", "Helvetica Neue", "Helvetica", sans-serif;
@@ -20,7 +20,6 @@
             align-items: flex-start;
             justify-content: flex-start;
             background-color:#000;
-            overflow: hidden;
         }
 
         header {
@@ -48,6 +47,54 @@
             display: flex;
             flex-direction: row;
             white-space: nowrap;
+        }
+        .flip-wrapper {
+            position: relative;
+            perspective: 500px;
+        }
+        .flipper {
+            
+        }
+        .glitter {
+                height: 124px;
+                width: 300px;
+                perspective: 500px;
+                position: absolute;
+                top: 20%;
+        }
+        .glitter-inner {
+            position: relative;
+            height: 124px;
+            width: 300px;
+            text-align: center;
+            transition: transform 100ms linear;
+            transform-origin: center center;
+            transform-style: preserve-3d;
+            animation: flip 4s linear 0s infinite forwards;
+        }
+        .glitter:hover .glitter-inner {
+            transform: rotateX(180deg);
+        }
+        .glitter-front, .glitter-back {
+            position: absolute;
+            width: 300px;
+            height: 124px;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform-origin: center center;
+        }
+        .glitter-front {
+            z-index: 2;
+        }
+        .glitter-back {
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+        @keyframes flip {
+            0% { transform: rotate3d(0, 0, 0, 0deg); }
+            100% { transform: rotate3d(-2, 0.5, 0.5, 720deg); }
         }
     </style>
     <script src="confetti.js"></script>
@@ -111,3 +158,4 @@ const $$ = str => document.querySelectorAll(str);
 </body>
 
 </html>
+

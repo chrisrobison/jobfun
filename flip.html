@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: "Lexend", "Helvetica Neue", "Helvetica", sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color:#000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+                color: #fff;
+        }
+
+        header {
+            background-color: #999;
+            color: #eee;
+            height: 0vh;
+        }
+
+        main {
+            background-color: #000;
+            color: #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background-color: #666;
+            color: #eee;
+            height: 0vh;
+        }
+
+        li {
+            display: flex;
+            flex-direction: row;
+            white-space: nowrap;
+        }
+        .flip-wrapper {
+            position: relative;
+            perspective: 500px;
+        }
+        .flipper {
+            
+        }
+        .glitter {
+    height: 31px;
+    width: 75px;
+    perspective: 500px;
+    position: absolute;
+    top: 20%;
+}
+.glitter-inner {
+    position: relative;
+    height: 31px;
+    width: 75px;
+    text-align: center;
+    transition: transform 100ms linear;
+    transform-origin: center center;
+    transform-style: preserve-3d;
+    animation: flip 4s linear 0s infinite forwards;
+}
+.glitter:hover .glitter-inner {
+    transform: rotateX(180deg);
+}
+.glitter-front, .glitter-back {
+    position: absolute;
+    width: 75px;
+    height: 31px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform-origin: center center;
+}
+.glitter-front {
+    background-image: url("100front.png");
+    z-index: 2;
+}
+.glitter-back {
+    background-image: url("100back.png");
+    transform: rotateY(180deg);
+    z-index: 1;
+}
+@keyframes flip {
+    0% { transform: rotate3d(0, 0, 0, 0deg); }
+    100% { transform: rotate3d(-2, 0.5, 0.5, 720deg); }
+}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="confetti.js"></script>
+</head>
+<body>
+<main>
+    <h1>Click to Make It Rain</h1>
+</main>
+<script>
+const $ = str => document.querySelector(str);
+const $$ = str => document.querySelectorAll(str);
+clickPosition = [];
+(function() {
+    const app = {
+        data: {},
+        state: {
+            loaded: false,
+            dragging: 0,
+            elements: []
+        },
+        init: function() {
+            document.addEventListener("mousedown", app.doDown);
+            document.addEventListener("mouseup", app.doUp);
+            document.addEventListener("mousemove", app.doMove);
+            document.addEventListener("click", app.doClick);
+            app.state.loaded = true;
+        },
+        doDown: function(e) {
+            app.state.dragging = 1;
+            clickPosition[0] = e.x;
+            clickPosition[1] = e.y;
+            let cnt = ~~(Math.random()*5);
+            for (let i=0; i<cnt; i++) {
+                confettiElements.push(new Conf());
+            }
+        },
+        doUp: function(e) {
+            app.state.dragging = 0;
+        },
+        doMove: function(e) {
+            if (!app.state.dragging) return;
+            clickPosition[0] = e.x;
+            clickPosition[1] = e.y;
+            let cnt = ~~(Math.random()*5);
+            for (let i=0; i<cnt; i++) {
+                confettiElements.push(new Conf());
+            }
+ 
+        },
+        fetch: function(url, callback) {
+            fetch(url).then(response=>response.json()).then(data=>{
+                app.data = data;
+                app.state.loaded = true;
+                if (callback && typeof(callback) === "function") {
+                    callback(data);
+                }
+            });
+        },
+        doClick: function(e) {
+            addDivConfetti(e);
+        },
+        display: function(data, tgt) {
+            let out = "<table><thead><tr>";
+            const keys = Object.keys(data[0]);
+            if (keys) {
+                keys.forEach(key => {
+                    out += `<th>${key}</th>`;
+                });
+            }
+            out += "</tr></thead><tbody>";
+            data.forEach(item=>{
+                out += `<tr>`;
+                keys.forEach(key => {
+                    out += `<td>${item[i]}</td>`;
+                });
+                out += `</tr>`;
+            });
+            out += "</tbody></table>";
+
+            if (tgt) {
+                tgt.innerHTML = out;
+            }
+            return out;
+        }
+    }
+    window.app = app;
+    app.init();
+})();
+</script>
+</body>
+
+</html>
+
