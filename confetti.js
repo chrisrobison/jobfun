@@ -12,7 +12,7 @@ rand = (min, max) => Math.random() * (max - min) + min;
 // params to play with
 const confettiParams = {
     // number of confetti per "explosion"
-    number: 20,
+    number: 5,
     // min and max size for each rectangle
     size: {
         x: [75, 75],

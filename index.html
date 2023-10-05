@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <head>
     <meta charset="utf-8">
     <title>Job Hunt Simulator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&family=Londrina+Shadow&family=Michroma&family=Orbitron:wght@400;500;600;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&family=Londrina+Shadow&family=Michroma&family=Orbitron:wght@400;500;600;800;900&family=Oxanium:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="confetti.css">
     <style>
         body {
@@ -19,7 +20,7 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
-            background-color:#000;
+            background-color: #000;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -51,20 +52,22 @@
             flex-direction: row;
             white-space: nowrap;
         }
+
         .flip-wrapper {
             position: relative;
             perspective: 500px;
         }
-        .flipper {
-            
-        }
+
+        .flipper {}
+
         .glitter {
-                height: 124px;
-                width: 300px;
-                perspective: 500px;
-                position: absolute;
-                top: 20%;
+            height: 124px;
+            width: 300px;
+            perspective: 500px;
+            position: absolute;
+            top: 20%;
         }
+
         .glitter-inner {
             position: relative;
             height: 124px;
@@ -75,10 +78,13 @@
             transform-style: preserve-3d;
             animation: flip 4s linear 0s infinite forwards;
         }
+
         .glitter:hover .glitter-inner {
             transform: rotateX(180deg);
         }
-        .glitter-front, .glitter-back {
+
+        .glitter-front,
+        .glitter-back {
             position: absolute;
             width: 300px;
             height: 124px;
@@ -88,76 +94,202 @@
             background-repeat: no-repeat;
             transform-origin: center center;
         }
+
         .glitter-front {
             z-index: 2;
         }
+
         .glitter-back {
             transform: rotateY(180deg);
             z-index: 1;
         }
+
         @keyframes flip {
-            0% { transform: rotate3d(0, 0, 0, 0deg); }
-            100% { transform: rotate3d(-2, 0.5, 0.5, 720deg); }
+            0% {
+                transform: rotate3d(0, 0, 0, 0deg);
+            }
+
+            100% {
+                transform: rotate3d(-2, 0.5, 0.5, 720deg);
+            }
+        }
+
+        #gameover {
+            text-align: center;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100vw;
+            height: 100vh;
+            background: #000c;
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: bold;
+            z-index: 99999;
+            letter-spacing: 6px;
+        }
+
+        #paused {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100vw;
+            height: 100vh;
+            background: #000c;
+            color: #0f0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: bold;
+            z-index: 99999;
+            letter-spacing: 6px;
+            animation: blink 2s infinite linear;
+        }
+
+        @keyframes blink {
+            0% {
+                color: #0f0f;
+            }
+
+            50% {
+                color: #0f00;
+            }
+
+            100% {
+                color: #0f0;
+            }
+        }
+        dialog {
+            padding: 0px;
+        }
+        #help {
+            width: 50rem;
+            font-size: 20px;
+            display:flex;
+            flex-direction: column;
+        }
+        .dialog-header {
+            background-color: #060;
+            color: #fff;
+            display: flex;
+            flex-direction:row;
+            justify-content: space-between;
+            padding: 0 0 0 1rem;
+            height: 3rem;
+        }
+        .dialog-body {
+            padding: 0 1rem;
+            overflow-y: scroll;
+        }
+        h2 { padding: 0; margin: 0; padding-top: 4px; }
+        button.close-button {
+            height: 2rem;
+            width: 2rem;
+            border: 0;
+            font-size: 1.5rem;
+            background: none;
+            color: #fff;
+            text-shadow: 1px 1px 0px #0009;
+            padding-top: 8px;
+        }
+        .dialog-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .close {
+            font-size: 22px;
         }
     </style>
     <script src="confetti.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
+
 <body>
-<main>
+    <main>
 
-</main>
-<script src="jobhuntmaze.js"></script>
-<script>
-const $ = str => document.querySelector(str);
-const $$ = str => document.querySelectorAll(str);
+    </main>
+    <div id="startscreen">
 
-(function() {
-    const app = {
-        data: {},
-        state: {
-            loaded: false
-        },
-        init: function() {
-            app.state.loaded = true;
-        },
-        fetch: function(url, callback) {
-            fetch(url).then(response=>response.json()).then(data=>{
-                app.data = data;
-                app.state.loaded = true;
-                if (callback && typeof(callback) === "function") {
-                    callback(data);
+    </div>
+    <dialog id="help">
+        <div class='dialog-header'>
+            <h2>Help</h2>
+            <button class='close-button'>x</button>
+        </div>
+        <div class='dialog-body'>
+            <h3>The Story</h3>
+            <p>You are a PacMan-like creature who lives a maze world and needs to earn money to pay rent. Only problem is, all the easy, mapped mazes are already spoken for. So you must collect dots and pursue money bags in the ever-changing uncharted mazes. Rent is due soon, so hurry up and finish before your time runs out!</p>
+            <h3>Goal</h3>
+            <p>Collect all the dots or explode all money bags in a maze before your time runs out.</p>
+        </div>
+        <div class='dialog-foot'>
+            <button class='close' onclick="">Back to Game</button>
+        </div>
+        </div>
+    </dialog>
+    <div id="paused">PAUSED<br><span style="font-size: 16px;font-weight: 300;">(Press 'P' to Resume)</span></div>
+    <div id="gameover">GAME OVER<br>You ran out of time!<br>
+        <div style="display: inline-block;font-size: 22px;font-weight: 400;">Final Score: <span id='finalscore'></span></div>
+    </div>
+    <script src="jobhuntmaze.js"></script>
+    <script>
+        const $ = str => document.querySelector(str);
+        const $$ = str => document.querySelectorAll(str);
+
+        (function() {
+            const app = {
+                data: {},
+                state: {
+                    loaded: false
+                },
+                init: function() {
+                    app.state.loaded = true;
+                },
+                fetch: function(url, callback) {
+                    fetch(url).then(response => response.json()).then(data => {
+                        app.data = data;
+                        app.state.loaded = true;
+                        if (callback && typeof(callback) === "function") {
+                            callback(data);
+                        }
+                    });
+                },
+                display: function(data, tgt) {
+                    let out = "<table><thead><tr>";
+                    const keys = Object.keys(data[0]);
+                    if (keys) {
+                        keys.forEach(key => {
+                            out += `<th>${key}</th>`;
+                        });
+                    }
+                    out += "</tr></thead><tbody>";
+                    data.forEach(item => {
+                        out += `<tr>`;
+                        keys.forEach(key => {
+                            out += `<td>${item[i]}</td>`;
+                        });
+                        out += `</tr>`;
+                    });
+                    out += "</tbody></table>";
+
+                    if (tgt) {
+                        tgt.innerHTML = out;
+                    }
+                    return out;
                 }
-            });
-        },
-        display: function(data, tgt) {
-            let out = "<table><thead><tr>";
-            const keys = Object.keys(data[0]);
-            if (keys) {
-                keys.forEach(key => {
-                    out += `<th>${key}</th>`;
-                });
             }
-            out += "</tr></thead><tbody>";
-            data.forEach(item=>{
-                out += `<tr>`;
-                keys.forEach(key => {
-                    out += `<td>${item[i]}</td>`;
-                });
-                out += `</tr>`;
-            });
-            out += "</tbody></table>";
-
-            if (tgt) {
-                tgt.innerHTML = out;
-            }
-            return out;
-        }
-    }
-    window.app = app;
-    app.init();
-})();
-</script>
+            window.app = app;
+            app.init();
+        })();
+    </script>
 </body>
 
 </html>

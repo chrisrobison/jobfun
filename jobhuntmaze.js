@@ -6,7 +6,7 @@ window.addEventListener("load", function() {
     let lSegment, nbx, nby, offsx, offsy, posx, posy;
     let segs, nbRot, maxNbRot;
     let grid, started = new Date().getTime();
-    let paused = 0, balls, score = 0, mouthCount = 0, mouthDir = 1, dotsEaten = 0, dotsTotal = 0, me;
+    let level = 1, paused = 0, balls, score = 0, mouthCount = 0, mouthDir = 1, dotsEaten = 0, dotsTotal = 0, me;
 
     const wSegment = 5;
 
@@ -437,33 +437,56 @@ var ballRadians = [
         move() {
             switch (this.moveStatus) {
                 case 0: // waiting to start move
-                    let dirs = arrayShuffle([0, 1, 3]); // changes in direction : forward, turn right, turn left
-                    dirs.push(2); // add half turn as a last chance
+                    let xdir=app.state.dir, newDir, nextCell;
+                    if (this.job || app.state.dir===undefined) {
+                        let dirs = arrayShuffle([0, 1, 3]); // changes in direction : forward, turn right, turn left
+                        dirs.push(2); // add half turn as a last chance
 
-                    let newDir, nextCell;
-                    trydirs: for (let k = 0; k < 4; ++k) {
-                        let dir = (this.dir + dirs[k]) % 4;
-                        if (grid[this.ky][this.kx].edges[dir].edgeLine.occupied) {
-                            continue trydirs; // forbidden edge
-                        } 
-                        nextCell = grid[this.ky + [-1, 0, 1, 0][dir]][this.kx + [0, 1, 0, -1][dir]];
-                        if (this.job && nextCell.occupied) {
-                            continue trydirs; // forbidden next cell
-                        } else if (!this.job && nextCell.occupied) {
+                        trydirs: for (let k = 0; k < 4; ++k) {
+                            xdir = (this.dir + dirs[k]) % 4;
+                            if (grid[this.ky][this.kx].edges[xdir].edgeLine.occupied) {
+                                continue trydirs; // forbidden edge
+                            } 
+                            nextCell = grid[this.ky + [-1, 0, 1, 0][xdir]][this.kx + [0, 1, 0, -1][xdir]];
+                            if (this.job && nextCell.occupied) {
+                                continue trydirs; // forbidden next cell
+                            } else if (!this.job && nextCell.occupied) {
+                                addDivConfetti({x: posx[this.kx], y: posy[this.ky]});
+                                let idx = balls.indexOf(nextCell.occupiedBy);
+                                if ((idx>-1) && balls[idx].job) {
+                                    balls.splice(idx, 1);
+                                    nextCell.occupied = false;
+                                    if (balls.length < 2) {
+                                        nextLevel();
+                                    }
+                                }
+                                score += 50;
+
+                            }
+
+                            newDir = xdir;
+                            break trydirs;
+                        } // for k
+                    } else {
+                        newDir = app.state.dir;
+                        xdir = app.state.dir;
+                        if (grid[this.ky][this.kx].edges[xdir].edgeLine.occupied) return;
+                        nextCell = grid[this.ky + [-1, 0, 1, 0][xdir]][this.kx + [0, 1, 0, -1][xdir]];
+                        if (!this.job && nextCell.occupied) {
                             addDivConfetti({x: posx[this.kx], y: posy[this.ky]});
                             let idx = balls.indexOf(nextCell.occupiedBy);
                             if ((idx>-1) && balls[idx].job) {
                                 balls.splice(idx, 1);
                                 nextCell.occupied = false;
+                                if (balls.length < 2) {
+                                    nextLevel();
+                                }
                             }
                             score += 50;
 
                         }
 
-                        newDir = dir;
-                        break trydirs;
-                    } // for k
-
+}
                     if (newDir === undefined) return; // can't start move
                     this.tInit = performance.now();
                     this.moveStatus = 1;
@@ -496,9 +519,7 @@ var ballRadians = [
                         this.moveStatus = 0;
                     }
                     break;
-                case 2: 
-                    
-                    break;
+                
             } // switch
         } // move
     } // class Ball
@@ -725,25 +746,41 @@ var ballRadians = [
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
+                        ctx.fillText("BAGS: " + (balls.length - 1) + '/' + bagcnt, 650, 35);
 
-                        let t = ~~(new Date().getTime()/1000);
-                        let sec =  t - started;
-                        let min = ~~(sec / 60);
-                        let hr = ~~(min / 60);
-                        sec = sec - (min * 60);
-                        min = min - (hr * 60);
+                        ctx.beginPath();
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
+                        ctx.fillStyle = "#ff0";
+                        ctx.textAlign = "center";
+
+                        let t = Math.floor(new Date().getTime());
+                        let sec = (gametime - (t - started)) / 1000;
 
                         if (sec < 10) {
-                            sec = '0' + sec;
+                            ctx.fillStyle = "#f00";
                         }
-                        if (min < 10) {
-                            min = '0' + min;
+                        if (sec < 0) {
+                            gameOver();
                         }
-                        if (hr < 10) {
-                            hr = '0' + hr;
-                        }
-                        ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 35);
+                        // let sec =  t - started;
+                        let min = Math.floor(sec / 60);
+                        sec = sec - (min * 60);
+                        
+                        sec = Math.round(sec * 10) / 10;
+                        
+                        if (min > -1) {
+                            if (sec < 10) {
+                                sec = '0' + sec;
+                            }
+                            if (min < 10) {
+                                min = '0' + min;
+                            }
+                            if (sec.toString().length < 4) sec += '.0';
+                            let hr = "00";
 
+                            
+                            ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 35);
+                        }
                         break;
 
                     case 2:
@@ -752,17 +789,20 @@ var ballRadians = [
             }
         }; // animate
     } // scope for animate
-
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
+    let bagcnt = 0;
+    let gametime = 0;
     function startOver() {
         // canvas dimensions
         paused = 0;
         score = 0;
+        gametime = (30 * (level + 1) * 1000);
+        
         let kx, ky;
         let nbh, nbv;
         let nbSegments;
-        started = ~~((new Date().getTime()) / 1000);
+        started = (new Date().getTime());
 
         maxx = window.innerWidth;
         maxy = window.innerHeight;
@@ -775,7 +815,7 @@ var ballRadians = [
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, maxx, maxy);
 
-        lSegment = msqrt(maxx * maxy) / rand(10, 20);
+        lSegment = msqrt(maxx * maxy) / (8 + (level * 2));
 
         nbx = mfloor((maxx - 10) / lSegment);
         nby = mfloor((maxy - 10) / lSegment);
@@ -808,7 +848,7 @@ var ballRadians = [
         // total numbers of segments, horizontal and vertical
         nbh = (nby + 1) * nbx;
         nbv = (nbx + 1) * nby;
-        nbSegments = mround((nbh + nbv) * rand(0.3, 0.6));
+        nbSegments = mround((nbh + nbv) * rand(0.2, 0.4));
         segs = [];
 
         for (let k = 0; k < nbSegments; ++k) {
@@ -827,10 +867,10 @@ var ballRadians = [
           */
         nbRot = 0;
 
-        maxNbRot = mround(nbSegments * rand(0.05, 0.1));
+        maxNbRot = mround(nbSegments * rand(0.01, 0.1));
         
         console.log(`nbSegments: ${nbSegments}`);
-        let bagcnt = Math.floor((grid.length / 1) * 1);
+        bagcnt = grid.length;
         balls = new Array(bagcnt).fill(0).map(() => new Ball(lSegment * 0.3, true));
         
         me = new Ball(lSegment * 0.3, false);
@@ -862,26 +902,56 @@ var ballRadians = [
         message: "reset"
     }];
 
+function gameOver() {
+    paused = 1;
+    document.querySelector("#gameover").style.display = "flex";
+    document.querySelector("#finalscore").innerHTML = score;
+}
+
 function doKeydown(e) {
     console.log("keydown");
     console.dir(e);
-
-    switch(e.key) {
+    
+   switch(e.key) {
         case "p":
             if (paused) {
                 paused = 0;
+                document.querySelector("#paused").style.display = "none";
                 animate();
             } else {
                 paused = 1;
+                document.querySelector("#paused").style.display = "flex";
+       
+            }
             break;
-
-    
-       }
-
+        case "ArrowLeft":
+            app.state.dir = 3;
+            break;
+        case "ArrowRight":
+            app.state.dir = 1;
+            break;
+        case "ArrowUp":
+            app.state.dir = 0;
+            break;
+        case "ArrowDown":
+            app.state.dir = 2;
+            break;
+        case "Space":
+            app.state.dir = undefined;
+            break;
+        case "?":
+        case "h":
+           paused = 1;
+            $("#help").showModal();
+            break;
+        case "r":
+            startOver();
+            break;
     }
 }
 let ani2stage = 0, animale, anifemale, anibag1, anibag2, heart;
 function nextLevel() {
+    level++;
     paused = 1;
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, maxx, maxy);
@@ -1050,8 +1120,11 @@ function animate2() {
             }
             break;
         case 4:
-            animale.x += animale.dx;
-            anifemale.x += anifemale.dx;
+            let mx = animale.x, my = animale.y;
+            let fx = anifemale.x, fy = anifemale.y;
+        
+            animale.x = animale.x + Math.cos(animale.x / 10) * 10;
+            anifemale.x = anifemale.x + Math.cos(anifemale.x / 10) * 10;
             animale.y = animale.y + Math.sin(animale.x / 20) * 10;  //animale.dy;
             anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
             // anifemale.y += anifemale.dy;
