@@ -746,6 +746,12 @@ var ballRadians = [
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
+                        ctx.fillText("LEVEL: " + level, 825, 35);
+
+                        ctx.beginPath();
+                        ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
+                        ctx.fillStyle = "#ff0";
+                        ctx.textAlign = "center";
                         ctx.fillText("BAGS: " + (balls.length - 1) + '/' + bagcnt, 650, 35);
 
                         ctx.beginPath();
@@ -965,23 +971,23 @@ function nextLevel() {
     done = 0;
 
     let r = 50;
-    animale = new Ball2(50, -r * 8, window.innerHeight * 0.2, 0, 0);
-    animale.dx = 6;
+    animale = new Ball2(50, -r * 8, window.innerHeight * 0.5, 0, 0);
+    animale.dx = 11;
     animale.dy = 0;
     animale.dir = 1;
 
-    anifemale = new Ball2(50, window.innerWidth + (r * 8), window.innerHeight * 0.2, 0, 1);
-    anifemale.dx = -6;
+    anifemale = new Ball2(50, window.innerWidth + (r * 8), window.innerHeight * 0.5, 0, 1);
+    anifemale.dx = -11;
     anifemale.dy = 0;
     anifemale.dir = 3;
 
-    anibag1 = new Ball2(50, -(r * 2), window.innerHeight * 0.2, 1, 0);
-    anibag1.dx = 6.25;
+    anibag1 = new Ball2(50, -(r * 2), window.innerHeight * 0.5, 1, 0);
+    anibag1.dx = 10;
     anibag1.dy = 0;
     anibag1.dir = 1;
 
-    anibag2 = new Ball2(50, window.innerWidth + (r * 4), window.innerHeight * 0.2, 1, 1);
-    anibag2.dx = -6.25;
+    anibag2 = new Ball2(50, window.innerWidth + (r * 4), window.innerHeight * 0.5, 1, 1);
+    anibag2.dx = -10;
     anibag2.dy = 0;
     anibag2.dir = 3;
 
@@ -1019,21 +1025,6 @@ class Heart {
         ctx.font = `200px Apple Color Emoji`;
         ctx.fillText("❤️", this.x, this.y);
         ctx.closePath();
-
-        ctx.moveTo(this.x, this.y + this.h);
-        ctx.lineTo(this.x -((this.w / 2) + (this.w / 4) - 8), this.y );
-        ctx.lineTo(this.x +((this.w / 2) + (this.w / 4) - 8), this.y );
-        ctx.lineTo(this.x, this.y + this.h);
-        ctx.fill();
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.arc(this.x - (this.w/3), this.y, this.w / 3, Math.PI, m2PI);
-        ctx.fill();
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.arc(this.x + (this.w/3), this.y, this.w / 3, Math.PI, m2PI);
-        ctx.fill();
-
     }
 }
 let done = 0;
@@ -1123,8 +1114,130 @@ function animate2() {
             let mx = animale.x, my = animale.y;
             let fx = anifemale.x, fy = anifemale.y;
         
-            animale.x = animale.x + Math.cos(animale.x / 10) * 10;
-            anifemale.x = anifemale.x + Math.cos(anifemale.x / 10) * 10;
+            animale.x += animale.dx;
+            anifemale.x += anifemale.dx;
+            animale.y = ((animale.y - 1) + Math.sin(animale.x / 20) * 10) ;  //animale.dy;
+            anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
+            // anifemale.y += anifemale.dy;
+            
+//            animale.dx += 0.01;
+            anifemale.dx += 0.1;
+
+            if (animale.dx < 10) {
+                animale.dx += 0.1;
+            } else {
+                animale.dx -= 0.1;
+            }
+            animale.draw();
+            anifemale.draw();
+            
+            heart.y += heart.dy;
+            heart.draw();
+
+            if (heart.y < 0) {
+                done = 1;
+                ani2stage = 5;
+                messages.push({
+                    message: "reset"
+                });
+                startOver();
+                animate();
+            }
+            break;
+        default:
+
+    }
+    if (!done) {
+        window.requestAnimationFrame(animate2);
+    }
+}
+function animate3() {
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, maxx, maxy);
+    /*
+     * ctx.beginPath();
+    ctx.lineWidth = wSegment;
+    ctx.rect(posx[0], posy[0], lSegment * nbx, lSegment * nby);
+    ctx.strokeStyle = "white";
+    ctx.stroke();
+    */
+    switch(ani2stage) {
+        // Male runs from left to right chasing money
+        case 1:    
+            animale.x += animale.dx;
+            anibag1.x += anibag1.dx;
+            animale.draw();
+            anibag1.draw();
+
+            if (animale.x > window.innerWidth + (animale.radius * 2)) {
+                ani2stage = 2;
+                anibag2.x = window.innerWidth;
+            }
+            break;
+
+        // Female runs from right to left (but lower) chasing money
+        case 2:
+            anifemale.x += anifemale.dx;
+            anibag2.x += anibag2.dx;
+    
+            anifemale.draw();
+            anibag2.draw();
+            if (anifemale.x < (anifemale.radius * 2)) {
+                anifemale.x = window.innerWidth + ((anifemale.radius) * 8);
+                anifemale.y = window.innerHeight / 2;
+                animale.y = window.innerHeight / 2;
+                animale.x = -(animale.radius * 8);
+                anibag1.x = -(anibag1.radius * 2);
+                anibag2.x = window.innerWidth + ((lSegment * 0.3) * 2);
+                anibag1.y = window.innerHeight / 2;
+                anibag2.y = window.innerHeight / 2;
+                ani2stage = 3;
+            }
+ 
+            break;
+
+        // Male & Female enter from left & right at same height, chasing money and bump in middle where money explodes
+        case 3:
+            animale.x += animale.dx;
+            anifemale.x += anifemale.dx;
+            anibag1.x += anibag1.dx;
+            anibag2.x += anibag2.dx;
+            anibag1.y += anibag1.dy;
+            anibag2.y += anibag2.dy;
+
+            animale.draw();
+            anifemale.draw();
+            anibag1.draw();
+            anibag2.draw();
+            
+            if (anibag1.x > (window.innerWidth / 2) - (anibag1.radius * 2)) {
+                anibag1.dx = 0;
+                anibag1.dy = -6;
+                anibag2.dx = 0;
+                anibag2.dy = -6;
+            }
+            if (animale.x > (window.innerWidth / 2) - animale.radius) {
+                celebrate({x: window.innerWidth / 2, y: window.innerHeight / 2}, 50);
+                animale.x = animale.x - animale.radius;
+                anifemale.x = anifemale.x + anifemale.radius;
+                anibag1.x = -1000;
+                anibag2.x = 1000;
+                ani2stage = 4;
+                animale.dx = -3;
+                anifemale.dx = 3;
+                animale.dy = -6;
+                anifemale.dy = -6;
+                heart.dy = -1;
+                heart.dx = 0;
+            }
+            break;
+        case 4:
+            let mx = animale.x, my = animale.y;
+            let fx = anifemale.x, fy = anifemale.y;
+        
+            animale.x += animale.dx;
+            anifemale.x = anifemale.dx;
             animale.y = animale.y + Math.sin(animale.x / 20) * 10;  //animale.dy;
             anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
             // anifemale.y += anifemale.dy;
