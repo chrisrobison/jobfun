@@ -57,8 +57,8 @@ function Conf() {
         y: clickPosition[1]
     };
     this.rotation = {
-        amt: rand(0, 4 * Math.PI) - (2 * Math.PI),
-        x: rand(0,2) - 1,
+        amt: Math.random() / 10,
+        x: rand(0,6) - 3,
         y: rand(0,4) - 2,
         z: rand(0,2) - 1
     };
@@ -101,7 +101,7 @@ function Conf() {
         this.velocity.y += confettiParams.gravity;
         this.velocity.y = Math.min(this.velocity.y, this.terminalVelocity);
         this.position.y += this.velocity.y;
-        this.rotate += confettiParams.rotateSpeed;
+        this.rotate += this.rotation.amt; //confettiParams.rotateSpeed;
         this.scale.y = Math.cos((this.position.y + this.randomModifier) * this.flipSpeed);
 	    this.element.style.transform = `rotate3d(${this.rotation.x},${this.rotation.y},${this.rotation.z},${this.rotate}rad)`;
 

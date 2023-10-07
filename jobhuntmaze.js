@@ -1116,7 +1116,7 @@ function animate2() {
         
             animale.x += animale.dx;
             anifemale.x += anifemale.dx;
-            animale.y = ((animale.y - 1) + Math.sin(animale.x / 20) * 10) ;  //animale.dy;
+            animale.y = (animale.y + Math.sin(animale.x / 20) * 1) ;  //animale.dy;
             anifemale.y = anifemale.y + Math.sin(anifemale.x / 20) * 10;  //animale.dy;
             // anifemale.y += anifemale.dy;
             
