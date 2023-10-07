@@ -734,25 +734,25 @@ var ballRadians = [
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
                         let showscore = '0'.repeat(6-score.toString().length) + score;
-                        ctx.fillText("SCORE: " + showscore, 175, 35);
+                        ctx.fillText("SCORE: " + showscore, window.innerWidth / 12, 35);
 
                         ctx.beginPath();
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
-                        ctx.fillText("DOTS: " + dotsEaten + '/' + dotsTotal, 425, 35);
+                        ctx.fillText("DOTS: " + dotsEaten + '/' + dotsTotal, window.innerWidth * 0.3, 35);
 
                         ctx.beginPath();
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
-                        ctx.fillText("LEVEL: " + level, 825, 35);
+                        ctx.fillText("LEVEL: " + level, window.innerWidth * 0.45, 35);
 
                         ctx.beginPath();
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
                         ctx.fillStyle = "#ff0";
                         ctx.textAlign = "center";
-                        ctx.fillText("BAGS: " + (balls.length - 1) + '/' + bagcnt, 650, 35);
+                        ctx.fillText("BAGS: " + (balls.length - 1) + '/' + bagcnt, window.innerWidth * 0.6, 35);
 
                         ctx.beginPath();
                         ctx.font = ((window.innerWidth * 0.02) ) + "px monospace"
@@ -785,7 +785,7 @@ var ballRadians = [
                             let hr = "00";
 
                             
-                            ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - 225, 35);
+                            ctx.fillText(`TIME: ${hr}:${min}:${sec}`, window.innerWidth - (window.innerWidth / 10), 35);
                         }
                         break;
 
